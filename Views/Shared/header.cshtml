@@ -58,21 +58,52 @@
  *@
 
 
+@inject IHttpContextAccessor accessor
+
 <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
     <div class="container">
         <a class="navbar-brand" href="index.html">Đặt phòng <span> Khách sạn</span></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav"
+                aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="oi oi-menu"></span> Menu
         </button>
 
         <div class="collapse navbar-collapse" id="ftco-nav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item active"><a href="index.html" class="nav-link">Home</a></li>
-                <li class="nav-item"><a href="rooms.html" class="nav-link">Our Rooms</a></li>
-                <li class="nav-item"><a href="restaurant.html" class="nav-link">Restaurant</a></li>
-                <li class="nav-item"><a href="about.html" class="nav-link">About Us</a></li>
-                <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
-                <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" asp-controller="Home" asp-action="Index">Trang chủ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Home" asp-action="About">Giới thiệu</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Room" asp-action="Index">Danh sách phòng</a>
+                </li>
+
+                @if (accessor.HttpContext.Session.GetString("UserName") == null
+                                && accessor.HttpContext.Session.GetString("admin") == null
+                                && accessor.HttpContext.Session.GetString("nhanvien") == null)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Account" asp-action="Login">Đăng nhập</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Account" asp-action="Signup">Đăng ký</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <div class="nav-link">@accessor.HttpContext.Session.GetString("UserName")</div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Account" asp-action="Logout">Đăng xuất</a>
+                    </li>
+                }
+
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Home" asp-action="Contact">Thông tin liên hệ</a>
+                </li>
             </ul>
         </div>
     </div>
