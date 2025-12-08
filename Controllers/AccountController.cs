@@ -58,7 +58,6 @@ namespace HotelManagement.Controllers
             return View(new PersonAndAccount());
         }
 
-        // POST: SignUp
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult SignUp(PersonAndAccount paa)
@@ -69,6 +68,10 @@ namespace HotelManagement.Controllers
             }
             else
             {
+                // Sinh GUID cho PersonId
+                paa.p.PersonId = Guid.NewGuid().ToString();
+
+                // Tạo tài khoản mới
                 bool taoTaiKhoan = repo.CreateAccount(new TaiKhoan
                 {
                     MaTaiKhoan = repo.CreateMaTaiKhoan(),
@@ -84,7 +87,8 @@ namespace HotelManagement.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Tạo tài khoản thành công");
+                    TempData["SuccessMessage"] = "Tạo tài khoản thành công! Vui lòng đăng nhập.";
+                    return RedirectToAction("Login");
                 }
             }
 

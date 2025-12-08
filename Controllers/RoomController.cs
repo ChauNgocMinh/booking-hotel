@@ -38,39 +38,122 @@ namespace HotelManagement.Controllers
             return View(treetable);
         }
 
-        [Authentication]
-        public IActionResult datPhongVaDichVu(string hoten,
-            int tuoi,
-            int gioitinh,
-            string cccd,
-            string sdt,
-            DateTime ngayden,
-            DateTime ngaydi,
-            string maphong,
-            string selectedServiceIds,
-            string servicePrice,
-            string selectedQuantities)
+        //[Authentication]
+        //public IActionResult datPhongVaDichVu(string hoten,
+        //    int tuoi,
+        //    int gioitinh,
+        //    string cccd,
+        //    string sdt,
+        //    DateTime ngayden,
+        //    DateTime ngaydi,
+        //    string maphong,
+        //    string selectedServiceIds,
+        //    string servicePrice,
+        //    string selectedQuantities)
+        //{
+        //    if (tuoi == 0 && gioitinh == 0 && cccd == null && sdt == null && ngayden == DateTime.MinValue && ngaydi == DateTime.MinValue)
+        //    {
+        //         return RedirectToAction("Index", "Room",new {error = false});
+        //    }
+        //    Person person = new Person();
+        //    if (accessor.HttpContext.Session.GetString("UserName") != null)
+        //    {
+        //        person = repo.getPersonByUserName(accessor.HttpContext.Session.GetString("UserName"));
+        //    }
+        //    else
+        //    {
+        //        person = new Person
+        //        {
+        //            PersonId = cccd,
+        //            HoTen = hoten,
+        //            Tuoi = tuoi,
+        //            GioiTinh = gioitinh,
+        //            Sdt = sdt
+        //        };
+        //    }
+
+        //    string maorderphong = repo.createOrderPhongId();
+        //    OrderPhong orderphong = new OrderPhong
+        //    {
+        //        MaOrderPhong = maorderphong,
+        //        NgayDen = ngayden,
+        //        NgayDi = ngaydi,
+        //        PersonId = cccd,
+        //        MaPhong = maphong,
+        //        Person = person,
+        //        TrangThaiThanhToan = 0,
+        //        MaPhongNavigation = repo.getPhongByMaPhong(maphong)
+        //    };
+
+
+        //    //đầu tiên add order phòng
+        //    repo.addOrderPhong(orderphong);
+
+        //    //tiếp theo add order phòng và danh sách dịch vụ của order phòng đó
+        //    if (selectedServiceIds != null && selectedQuantities != null && servicePrice != null)
+        //    {
+        //        List<string> madichvu = selectedServiceIds.Split(',').ToList();
+        //        List<int> soLuongMoiDichVu = selectedQuantities.Split(",").Select(int.Parse).ToList();
+        //        List<float> giaMoiDichVu = servicePrice.Split(",").Select(float.Parse).ToList();
+
+        //        List<OrderPhongDichVu> orderphongdichvu = new List<OrderPhongDichVu>();
+        //        for (int i = 0; i < madichvu.Count(); i++)
+        //        {
+        //            orderphongdichvu.Add(new OrderPhongDichVu
+        //            {
+        //                MaOrderPhong = maorderphong,
+        //                MaDichVu = madichvu[i],
+        //                SoLuong = soLuongMoiDichVu[i],
+        //                DonGia = giaMoiDichVu[i]
+        //            });
+        //        }
+
+        //        repo.addOrderPhongDichVu(orderphongdichvu);
+        //    }
+
+
+        //    //cuối cùng update trạng thái phòng là đăng thuê
+
+        //    //người đăng kí phòng là user thì mã trạng thái phòng là đặt trước,nếu là admin thì trạng thái đang thuê
+        //    if (accessor.HttpContext.Session.GetString("UserName") != null)
+        //    {
+        //        repo.updateTrangThaiPhong(maphong, "MTT3");
+        //    }
+        //    else repo.updateTrangThaiPhong(maphong, "MTT2");
+
+        //    return RedirectToAction("Index", "Room", new { error = true });
+        //}
+        public IActionResult datPhongVaDichVu(
+        string hoten,
+        int tuoi,
+        int gioitinh,
+        string cccd,
+        string sdt,
+        DateTime? ngayden,
+        DateTime? ngaydi,
+        string maphong,
+        string selectedServiceIds,
+        string servicePrice,
+        string selectedQuantities)
         {
-            if (tuoi == 0 && gioitinh == 0 && cccd == null && sdt == null && ngayden == DateTime.MinValue && ngaydi == DateTime.MinValue)
+            // Lấy thông tin user từ session
+            var userName = accessor.HttpContext.Session.GetString("UserName");
+
+            // Nếu chưa đăng nhập -> redirect về trang login
+            if (string.IsNullOrEmpty(userName))
             {
-                 return RedirectToAction("Index", "Room",new {error = false});
+                return RedirectToAction("Login", "Account");
             }
-            Person person = new Person();
-            if (accessor.HttpContext.Session.GetString("UserName") != null)
-            {
-                person = repo.getPersonByUserName(accessor.HttpContext.Session.GetString("UserName"));
-            }
-            else
-            {
-                person = new Person
-                {
-                    PersonId = cccd,
-                    HoTen = hoten,
-                    Tuoi = tuoi,
-                    GioiTinh = gioitinh,
-                    Sdt = sdt
-                };
-            }
+
+            if (string.IsNullOrEmpty(hoten) || tuoi <= 0 || gioitinh < 0 || string.IsNullOrEmpty(cccd)
+              || string.IsNullOrEmpty(sdt) || !ngayden.HasValue || !ngaydi.HasValue)
+                    {
+                        return RedirectToAction("Index", "Room", new { error = false });
+                    }
+
+
+            // Lấy thông tin khách hàng từ session
+            Person person = repo.getPersonByUserName(userName);
 
             string maorderphong = repo.createOrderPhongId();
             OrderPhong orderphong = new OrderPhong
@@ -78,26 +161,25 @@ namespace HotelManagement.Controllers
                 MaOrderPhong = maorderphong,
                 NgayDen = ngayden,
                 NgayDi = ngaydi,
-                PersonId = cccd,
+                PersonId = person.PersonId,
                 MaPhong = maphong,
                 Person = person,
                 TrangThaiThanhToan = 0,
                 MaPhongNavigation = repo.getPhongByMaPhong(maphong)
             };
-
-
-            //đầu tiên add order phòng
             repo.addOrderPhong(orderphong);
 
-            //tiếp theo add order phòng và danh sách dịch vụ của order phòng đó
-            if (selectedServiceIds != null && selectedQuantities != null && servicePrice != null)
+            // Thêm dịch vụ nếu có
+            if (!string.IsNullOrEmpty(selectedServiceIds)
+                && !string.IsNullOrEmpty(selectedQuantities)
+                && !string.IsNullOrEmpty(servicePrice))
             {
-                List<string> madichvu = selectedServiceIds.Split(',').ToList();
-                List<int> soLuongMoiDichVu = selectedQuantities.Split(",").Select(int.Parse).ToList();
-                List<float> giaMoiDichVu = servicePrice.Split(",").Select(float.Parse).ToList();
+                var madichvu = selectedServiceIds.Split(',').ToList();
+                var soLuongMoiDichVu = selectedQuantities.Split(',').Select(int.Parse).ToList();
+                var giaMoiDichVu = servicePrice.Split(',').Select(float.Parse).ToList();
 
-                List<OrderPhongDichVu> orderphongdichvu = new List<OrderPhongDichVu>();
-                for (int i = 0; i < madichvu.Count(); i++)
+                var orderphongdichvu = new List<OrderPhongDichVu>();
+                for (int i = 0; i < madichvu.Count; i++)
                 {
                     orderphongdichvu.Add(new OrderPhongDichVu
                     {
@@ -107,20 +189,10 @@ namespace HotelManagement.Controllers
                         DonGia = giaMoiDichVu[i]
                     });
                 }
-
                 repo.addOrderPhongDichVu(orderphongdichvu);
             }
 
-
-            //cuối cùng update trạng thái phòng là đăng thuê
-
-            //người đăng kí phòng là user thì mã trạng thái phòng là đặt trước,nếu là admin thì trạng thái đang thuê
-            if (accessor.HttpContext.Session.GetString("UserName") != null)
-            {
-                repo.updateTrangThaiPhong(maphong, "MTT3");
-            }
-            else repo.updateTrangThaiPhong(maphong, "MTT2");
-
+            repo.updateTrangThaiPhong(maphong, "MTT3"); // đặt trước
             return RedirectToAction("Index", "Room", new { error = true });
         }
 

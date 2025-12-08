@@ -1,64 +1,83 @@
 ﻿@model IEnumerable<OrderPhong>
-<div class="container" style="border:1px solid black">
-    <div class="row">
-        <div class="col-12">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>Phòng</th>
-                        <th>Ngày đến</th>
-                        <th>Ngày đi</th>
-                        <th>Hủy</th>
-                    </tr>
-                </thead>
 
-                <tbody>
-                    @{
-                        int i = 1;
-                        foreach (var order in Model)
-                        {
+<div class="container my-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Danh sách phòng đã đặt</h4>
+        </div>
+        <div class="card-body">
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info text-center">
+                    Bạn chưa có phòng nào đặt.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle text-center">
+                        <thead class="table-light">
                             <tr>
-                                <th>@(i++)</th>
-                                <th>@order.MaPhongNavigation.TenPhong</th>
-                                <th>@order.NgayDen</th>
-                                <th>@order.NgayDi</th>
-                                <th>
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#@order.MaOrderPhong">
-                                        Hủy
-                                    </button>
-
-                                    <!-- The Modal -->
-                                    <div class="modal fade" id="@order.MaOrderPhong">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content">
-
-                                                <!-- Modal Header -->
-                                                <div class="modal-header">
-                                                    <h4 class="modal-title">Hủy phòng</h4>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
-
-                                                <!-- Modal body -->
-                                                <div class="modal-body">
-                                                    Bạn có muốn hủy
-                                                </div>
-
-                                                <!-- Modal footer -->
-                                                <div class="modal-footer">
-                                                    <a class="btn btn-danger" asp-action="removeOrder"  asp-route-maorder="@order.MaOrderPhong" asp-route-maphong="@order.MaPhong">Xác nhận</a>
-                                                    <a class="btn btn-danger" data-bs-dismiss="modal">Close</a>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </th>
+                                <th>#</th>
+                                <th>Phòng</th>
+                                <th>Ngày đến</th>
+                                <th>Ngày đi</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
                             </tr>
-                        }
-                    }
-                </tbody>
-            </table>
+                        </thead>
+                        <tbody>
+                            @{
+                                int i = 1;
+                                foreach (var order in Model)
+                                {
+                                    <tr>
+                                        <th>@(i++)</th>
+                                        <td>@order.MaPhongNavigation.TenPhong</td>
+                                        <td>@order.NgayDen?.ToString("dd/MM/yyyy")</td>
+                                        <td>@order.NgayDi?.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            @if (order.TrangThaiThanhToan == 0)
+                                            {
+                                                <span class="badge bg-warning text-dark">Chưa thanh toán</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-success">Đã thanh toán</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal@order.MaOrderPhong">
+                                                Hủy
+                                            </button>
+
+                                            <!-- Modal -->
+                                            <div class="modal fade" id="cancelModal@order.MaOrderPhong" tabindex="-1" aria-labelledby="cancelModalLabel@order.MaOrderPhong" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header bg-danger text-white">
+                                                            <h5 class="modal-title" id="cancelModalLabel@order.MaOrderPhong">Xác nhận hủy</h5>
+                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            Bạn có chắc chắn muốn hủy phòng <strong>@order.MaPhongNavigation.TenPhong</strong> từ <strong>@order.NgayDen?.ToString("dd/MM/yyyy")</strong> đến <strong>@order.NgayDi?.ToString("dd/MM/yyyy")</strong>?
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <a class="btn btn-danger" asp-action="removeOrder" asp-route-maorder="@order.MaOrderPhong" asp-route-maphong="@order.MaPhong">Xác nhận</a>
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
         </div>
     </div>
 </div>
