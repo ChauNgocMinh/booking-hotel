@@ -110,13 +110,8 @@
     <!-- HEADER -->
     <header class="admin-top d-flex align-items-center px-3">
         <div class="d-flex align-items-center gap-2">
-            <!-- toggle sidebar -->
-            <button id="btnToggleSidebar" class="btn btn-sm btn-outline-secondary me-2" type="button" aria-label="Toggle sidebar">
-                <i class="bi bi-list"></i>
-            </button>
-
             <a class="navbar-brand mb-0" href="/">
-                <span class="fw-bold">Paradise Hotel - Admin</span>
+                <span class="fw-bold">Đặt phòng khách sạn - Admin</span>
             </a>
         </div>
 
@@ -161,14 +156,6 @@
     <nav id="adminSidebar" class="admin-sidebar">
         <div class="p-3">
             <ul class="nav nav-pills flex-column mb-0">
-                <li class="nav-item">
-                    <a class="nav-link" asp-controller="Admin" asp-action="Index">
-                        <i class="bi bi-speedometer2 me-2"></i>
-                        <span class="sidebar-label">Dashboard</span>
-                    </a>
-                </li>
-
-                @* ADMIN menu *@
                 @if (!string.IsNullOrEmpty(adminName))
                 {
                     <li class="nav-item mt-2">

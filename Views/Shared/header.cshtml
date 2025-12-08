@@ -1,8 +1,8 @@
 ﻿@inject IHttpContextAccessor accessor
-<header>
+@* <header>
     <nav class="navbar navbar-expand-lg bg-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Paradise Hotel</a>
+            <a class="navbar-brand" href="#">Đặt phòng khách sạn</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -14,87 +14,15 @@
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Room" asp-action="Index">Rooms</a>
                     </li>
-
-
                     <li class="nav-item">
                         <a class="nav-link">About</a>
                     </li>
-
-                    @{
-                        if (accessor.HttpContext.Session.GetString("admin") != null)
-                        {
-                            <li class="dropdown">
-                                <button class="btn btn-light dropdown-toggle text-primary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Các mục quản lý
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li class="nav-item">
-                                        <a class="nav-link" asp-controller="Admin" asp-action="QLPhong">Quản lý phòng</a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a class="nav-link" asp-controller="Admin" asp-action="QLDichVu">Quản lý dịch vụ</a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a class="nav-link" asp-controller="Admin" asp-action="QLHoaDon">Quản lý hóa đơn</a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a class="nav-link" asp-controller="Admin" asp-action="QLUser">Quản lý khách hàng</a>
-                                    </li>
-                                    
-                                    <li>
-                                        <a class="nav-link" asp-controller="Admin" asp-action="QLNhanVien">Quản lý nhân viên</a>
-
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" asp-controller="Admin" asp-action="QLTaiKhoan">Quản lý tài khoản</a>
-                                    </li>
-
-
-                                </ul>
-                            </li>
-                        }
-                        else if(accessor.HttpContext.Session.GetString("nhanvien") != null)
-                        {
-                            <li class="dropdown">
-                                <button class="btn btn-light dropdown-toggle text-primary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Các mục quản lý
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li class="nav-item">
-                                        <a class="nav-link" asp-controller="Admin" asp-action="QLPhong">Quản lý phòng</a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a class="nav-link" asp-controller="Admin" asp-action="QLDichVu">Quản lý dịch vụ</a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a class="nav-link" asp-controller="Admin" asp-action="QLHoaDon">Quản lý hóa đơn</a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a class="nav-link" asp-controller="Admin" asp-action="QLUser">Quản lý khách hàng</a>
-                                    </li>
-                                </ul>
-                            </li>
-                        }
-                        else if (accessor.HttpContext.Session.GetString("UserName") != null)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="BookingHistoryOfUser" asp-action="Index">Phòng đã đặt trước</a>
-                            </li>
-                        }
-                    }
                 </ul>
 
                 <div class="d-flex justify-content-around">
                     <ul class="navbar-nav me-auto">
 
                         @{
-                            //nếu 1 trong 3 lại tài khoản của đăngn nhập thì hiện Đăng nhập , đăng kí
                             if (accessor.HttpContext.Session.GetString("UserName") == null 
                             && accessor.HttpContext.Session.GetString("admin") == null
                             && accessor.HttpContext.Session.GetString("nhanvien") == null)
@@ -127,3 +55,25 @@
         </div>
     </nav>
 </header>
+ *@
+
+
+<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+    <div class="container">
+        <a class="navbar-brand" href="index.html">Đặt phòng <span> Khách sạn</span></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="oi oi-menu"></span> Menu
+        </button>
+
+        <div class="collapse navbar-collapse" id="ftco-nav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active"><a href="index.html" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="rooms.html" class="nav-link">Our Rooms</a></li>
+                <li class="nav-item"><a href="restaurant.html" class="nav-link">Restaurant</a></li>
+                <li class="nav-item"><a href="about.html" class="nav-link">About Us</a></li>
+                <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
+                <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
