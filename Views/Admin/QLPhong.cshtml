@@ -1,301 +1,270 @@
 ﻿@model LoaiPhongAndPhong
+@{
+    Layout = "_AdminLayout";
+}
 
-<div class="container-fluid row">
+<div class="container-fluid py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Quản lý phòng & Loại phòng</h3>
 
-    <div class="col-12 p-0">
-        <div>
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#myModal">
-                Thêm loại phòng
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalAddLoai">
+                <i class="bi bi-plus-lg"></i> Thêm loại phòng
+            </button>
+
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalAddPhong">
+                <i class="bi bi-hotel"></i> Thêm phòng
             </button>
         </div>
+    </div>
 
-        <!-- The Modal -->
-        <div class="modal" id="myModal">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
+    <div class="row g-3">
+        <!-- LEFT: Loại phòng (scrollable) -->
+        <aside class="col-12 col-md-3">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong>Loại phòng</strong>
+                    <a class="btn btn-sm btn-outline-secondary" href="/admin/QLPhong/">All</a>
+                </div>
 
-                    <!-- Modal Header -->
-                    <div class="modal-header">
-                        <h4 class="modal-title">Thêm loại phòng</h4>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-
-                    <!-- Modal body -->
-                    <div class="modal-body">
-                        <form method="post" asp-controller="Admin" asp-action="themLoaiPhong">
-                            <label class="form-label">Mã loại phòng</label>
-                            <input class="form-control" type="text" name="maloaiphong" />
-
-                            <label class="form-label">Tên loại phòng</label>
-                            <input class="form-control" type="text" name="tenloaiphong" />
-
-                            <label class="form-label">Giá loại phòng</label>
-                            <input class="form-control" type="number" name="gialoaiphong" />
-                            <!-- Modal footer -->
-                            <div class="modal-footer">
-                                <button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Thêm</button>
+                <div class="list-group list-group-flush overflow-auto" style="max-height:70vh;">
+                    @foreach (LoaiPhong p in Model.lp)
+                    {
+                        <a class="list-group-item list-group-item-action" href="/admin/QLPhong/@p.MaLoaiPhong">
+                            <div class="d-flex justify-content-between">
+                                <div>@p.TenLoaiPhong</div>
+                                <small class="text-muted">@string.Format("{0:N0}", p.GiaPhong)</small>
                             </div>
-                        </form>
+                            <small class="text-muted">Mã: @p.MaLoaiPhong</small>
+                        </a>
+                    }
+                </div>
+            </div>
+        </aside>
+
+        <!-- RIGHT: Danh sách phòng & các bảng -->
+        <section class="col-12 col-md-9">
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive" style="max-height:72vh; overflow:auto;">
+                        <table class="table table-striped table-hover mb-0 align-middle">
+                            <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
+                                <tr>
+                                    <th>Mã phòng</th>
+                                    <th>Tên phòng</th>
+                                    <th>Mô tả</th>
+                                    <th>Giá</th>
+                                    <th>Trạng thái</th>
+                                    <th class="text-center">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var p in Model.p)
+                                {
+                                    <tr>
+                                        <td class="align-middle">@p.MaPhong</td>
+                                        <td class="align-middle">@p.TenPhong</td>
+                                        <td class="align-middle" style="min-width:220px;">
+                                            <textarea class="form-control form-control-sm" rows="2" readonly>@p.MoTaPhong</textarea>
+                                        </td>
+                                        <td class="align-middle">@String.Format("{0:N0}", p.MaLoaiPhongNavigation.GiaPhong)</td>
+                                        <td class="align-middle">@p.MaTrangThaiNavigation.TenTrangThai</td>
+                                        <td class="align-middle text-center" style="width:220px;">
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalEditRoom_@p.MaPhong">
+                                                    <i class="bi bi-pencil"></i> Sửa
+                                                </button>
+                                                <a href="/Admin/phong/xoaPhong/@p.MaPhong" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc muốn xóa phòng @p.MaPhong?');">
+                                                    <i class="bi bi-trash"></i> Xóa
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Modal Sửa phòng (ID an toàn) -->
+                                    <div class="modal fade" id="modalEditRoom_@p.MaPhong" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                                            <div class="modal-content">
+                                                <form method="post" asp-controller="Admin" asp-action="suaPhong" class="needs-validation" novalidate>
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Sửa phòng - @p.MaPhong</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+
+                                                    <div class="modal-body">
+                                                        <input type="hidden" name="maphong" value="@p.MaPhong" />
+                                                        <div class="row g-3">
+                                                            <div class="col-md-6">
+                                                                <label class="form-label">Tên phòng</label>
+                                                                <input class="form-control" name="tenphong" value="@p.TenPhong" required />
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label class="form-label">Loại phòng</label>
+                                                                <select class="form-select" name="maloaiphong" required>
+                                                                    @foreach (var lp in Model.lp)
+                                                                    {
+                                                                        <option value="@lp.MaLoaiPhong" selected="@(Equals(lp.MaLoaiPhong, p.MaLoaiPhong) ? "selected" : null)">
+                                                                            @lp.TenLoaiPhong - @string.Format("{0:N0}", lp.GiaPhong)
+                                                                        </option>
+                                                                    }
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="col-md-6">
+                                                                <label class="form-label">Trạng thái</label>
+                                                                <select class="form-select" name="matrangthai" required>
+                                                                    @foreach (var tt in Model.ttp)
+                                                                    {
+                                                                        <option value="@tt.MaTrangThai" selected="@(Equals(tt.MaTrangThai, p.MaTrangThai) ? "selected" : null)">
+                                                                            @tt.TenTrangThai
+                                                                        </option>
+                                                                    }
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="col-12">
+                                                                <label class="form-label">Mô tả</label>
+                                                                <textarea class="form-control" name="motaphong" rows="3">@p.MoTaPhong</textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                                        <button type="submit" class="btn btn-primary">Lưu</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <table class="table table-striped" style="border:1px solid black">
-            <thead>
-                <tr>
-                    <th>Mã loại phòng</th>
-                    <th>Tên loại phòng</th>
-                    <th>Giá loại phòng</th>
-                    <th>Sửa</th>
-                    <th>Xóa</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                @foreach (LoaiPhong p in Model.lp)
-                {
-                    <tr>
-                        <td>@p.MaLoaiPhong</td>
-                        <td>@p.TenLoaiPhong</td>
-                        <td>@string.Format("{0:N0}", p.GiaPhong)</td>
-                        <td>
-                            <div>
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#@p.MaLoaiPhong">
-                                    Sửa
-                                </button>
-                            </div>
-                            <!-- The Modal -->
-                            <div class="modal" id="@p.MaLoaiPhong">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content">
-
-                                        <!-- Modal Header -->
-                                        <div class="modal-header">
-                                            <h4 class="modal-title">Sửa loại phòng</h4>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                        </div>
-
-                                        <!-- Modal body -->
-                                        <div class="modal-body">
-                                            <form method="post" asp-controller="Admin" asp-action="suaLoaiPhong">
-                                                <label class="form-label">Mã loại phòng</label>
-                                                <input class="form-control" type="text" name="maloaiphong" value="@p.MaLoaiPhong"/>
-
-                                                <label class="form-label">Tên loại phòng</label>
-                                                <input class="form-control" type="text" name="tenloaiphong" value="@p.TenLoaiPhong"/>
-
-                                                <label class="form-label">Giá loại phòng</label>
-                                                <input class="form-control" type="number" name="gialoaiphong" value="@p.GiaPhong" />
-                                                <!-- Modal footer -->
-                                                <div class="modal-footer">
-                                                    <button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Sửa</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-
-                        <td>
-                            <a class="btn btn-primary" href="/admin/phong/removeLoaiPhong/@p.MaLoaiPhong">Xóa</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        </section>
     </div>
-    <div>
-        <div>
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal2">
-                Thêm phòng
-            </button>
-        </div>
-        <!-- The Modal -->
-        <div class="modal" id="modal2">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
+</div>
 
-                    <!-- Modal Header -->
-                    <div class="modal-header">
-                        <h4 class="modal-title">Thêm phòng</h4>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<!-- Modal Thêm Loại phòng -->
+<div class="modal fade" id="modalAddLoai" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post" asp-controller="Admin" asp-action="themLoaiPhong" class="needs-validation" novalidate>
+                <div class="modal-header">
+                    <h5 class="modal-title">Thêm loại phòng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Mã loại phòng</label>
+                        <input class="form-control" name="maloaiphong" required />
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tên loại phòng</label>
+                        <input class="form-control" name="tenloaiphong" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Giá loại phòng</label>
+                        <input class="form-control" name="gialoaiphong" type="number" min="0" required />
+                    </div>
+                </div>
 
-                    <!-- Modal body -->
-                    <div class="modal-body">
-                        <form method="post" asp-controller="Admin" asp-action="themPhong">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-danger">Thêm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Thêm Phòng -->
+<div class="modal fade" id="modalAddPhong" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <form method="post" asp-controller="Admin" asp-action="themPhong" class="needs-validation" novalidate>
+                <div class="modal-header">
+                    <h5 class="modal-title">Thêm phòng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
                             <label class="form-label">Mã phòng</label>
-                            <input class="form-control" type="text" name="maphong"  />
+                            <input class="form-control" name="maphong" required />
+                        </div>
 
+                        <div class="col-md-4">
                             <label class="form-label">Tên phòng</label>
-                            <input class="form-control" type="text" name="tenphong" />
+                            <input class="form-control" name="tenphong" required />
+                        </div>
 
-                            <label class="form-label">Mô tả phòng</label>
-                            <input class="form-control" type="text" name="motaphong" />
+                        <div class="col-md-4">
+                            <label class="form-label">Giá (theo loại)</label>
+                            <select class="form-select" name="maloaiphong" required>
+                                <option disabled selected value="">-- Chọn loại phòng --</option>
+                                @foreach (var loaiphong in Model.lp)
+                                {
+                                    <option value="@loaiphong.MaLoaiPhong">@loaiphong.TenLoaiPhong - @string.Format("{0:N0}", loaiphong.GiaPhong)</option>
+                                }
+                            </select>
+                        </div>
 
-                            <label class="form-label">Trạng thái phòng</label>
-                            <select class="form-select" name="matrangthai">
-                                <option disabled selected></option>
-                                @foreach(var trangthai in Model.ttp)
+                        <div class="col-md-6">
+                            <label class="form-label">Trạng thái</label>
+                            <select class="form-select" name="matrangthai" required>
+                                <option disabled selected value="">-- Chọn trạng thái --</option>
+                                @foreach (var trangthai in Model.ttp)
                                 {
                                     <option value="@trangthai.MaTrangThai">@trangthai.TenTrangThai</option>
                                 }
                             </select>
+                        </div>
 
-                            <label class="form-label">Loại phòng</label>
-                            <select class="form-select" name="maloaiphong">
-                                <option disabled selected></option>
-                                @foreach (var loaiphong in Model.lp)
-                                {
-                                    <option value="@loaiphong.MaLoaiPhong">@loaiphong.TenLoaiPhong - @string.Format("{0:N0}", @loaiphong.GiaPhong)</option>
-                                }
-                            </select>
-
-                            <!-- Modal footer -->
-                            <div class="modal-footer">
-                                <button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Thêm</button>
-                            </div>
-                        </form>
+                        <div class="col-12">
+                            <label class="form-label">Mô tả</label>
+                            <textarea class="form-control" name="motaphong" rows="3"></textarea>
+                        </div>
                     </div>
-
-
                 </div>
-            </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-danger">Thêm phòng</button>
+                </div>
+            </form>
         </div>
-    </div>
-    <div class="col-2 text-center p-0" style="border:1px solid black">
-        <h4>Loại phòng</h4>
-        <div>
-            @{
-                <a class="btn btn-block m-2 roomtype" href="/admin/QLPhong/">All</a>
-
-                <br />
-                foreach (LoaiPhong p in Model.lp)
-                {
-                    <a class="btn btn-block m-3 roomtype" href="/admin/QLPhong/@p.MaLoaiPhong">@p.TenLoaiPhong</a>
-
-                    <br />
-                }
-            }
-        </div>
-
-    </div>
-    <div class="col-10 p-0 product-list" style="border:1px solid black;overflow-y: auto">
-        <table class="table table-striped">
-            <thead style="position:sticky;top:0;background-color: #fff">
-                <tr>
-                    <th>Mã phòng</th>
-                    <th>Tên phòng</th>
-                    <th>Mô tả phòng</th>
-                    <th>Giá phòng</th>
-                    <th>Trạng thái phòng</th>
-                    <th>Sửa</th>
-                    <th>Xóa</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var p in Model.p)
-                {
-                    <tr>
-                        <td>@p.MaPhong</td>
-                        <td>@p.TenPhong</td>
-                        <td>
-                            <textarea class="text-center">
-                                @p.MoTaPhong
-                            </textarea>
-                        </td>
-                        <td>@String.Format("{0:N0}",@p.MaLoaiPhongNavigation.GiaPhong)</td>
-                        <td>@p.MaTrangThaiNavigation.TenTrangThai</td>
-                        <td>
-                            <div>
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#@p.MaPhong">
-                                    Sửa 
-                                </button>
-                            </div>
-                            <!-- The Modal -->
-                            <div class="modal" id="@p.MaPhong">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content">
-
-                                        <!-- Modal Header -->
-                                        <div class="modal-header">
-                                            <h4 class="modal-title">Sửa phòng</h4>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                        </div>
-
-                                        <!-- Modal body -->
-                                        <div class="modal-body">
-                                            <form method="post" asp-controller="Admin" asp-action="suaPhong">
-                                                <label class="form-label">Mã phòng</label>
-                                                <input class="form-control" type="text" name="maphong" value="@p.MaPhong" />
-
-                                                <label class="form-label">Tên phòng</label>
-                                                <input class="form-control" type="text" name="tenphong" value="@p.TenPhong"/>
-
-                                                <label class="form-label">Mô tả phòng</label>
-                                                <input class="form-control" type="text" name="motaphong"  value="@p.MoTaPhong"/>
-
-                                                <label class="form-label">Trạng thái phòng</label>
-                                                <select class="form-select" name="matrangthai">
-                                                    @foreach (var trangthai in Model.ttp)
-                                                    {
-                                                        <option value="@trangthai.MaTrangThai" selected="@Equals(trangthai.MaTrangThai, p.MaTrangThai)">@trangthai.TenTrangThai</option>
-                                                    }
-                                                </select>
-
-                                                <label class="form-label">Loại phòng</label>
-                                                <select class="form-select" name="maloaiphong">
-                                                    <option disabled selected></option>
-                                                    @foreach (var loaiphong in Model.lp)
-                                                    {
-                                                        <option selected="@Equals(loaiphong.MaLoaiPhong, p.MaLoaiPhong)" value="@loaiphong.MaLoaiPhong">@loaiphong.TenLoaiPhong - @string.Format("{0:N0}", @loaiphong.GiaPhong)</option>
-                                                    }
-                                                </select>
-
-                                                <!-- Modal footer -->
-                                                <div class="modal-footer">
-                                                    <button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Sửa</button>
-                                                </div>
-                                            </form>
-                                        </div>
-
-
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <a href="/Admin/phong/xoaPhong/@p.MaPhong" class="btn btn-primary">Xóa</a>
-                        </td>
-                    </tr>
-                }
-               
-            </tbody>
-        </table>
     </div>
 </div>
 
+<!-- Optional: Bootstrap icons CDN (dùng icon nhỏ) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
-
+<!-- Client-side: bootstrap validation + auto-resize textareas -->
 <script>
+    (function () {
+        'use strict'
+        // Bootstrap form validation
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
 
-    // Lấy phần tử theo class
-    var elements = document.querySelectorAll('.roomtype');
-    var totalHeight = 0;
-    elements.forEach(e => {
-        var basicHeight = e.clientHeight;
-
-        var marginTop = parseInt(window.getComputedStyle(e).marginTop);
-        var marginBottom = parseInt(window.getComputedStyle(e).marginBottom);
-
-        var paddingTop = parseInt(window.getComputedStyle(e).paddingTop);
-        var paddingBottom = parseInt(window.getComputedStyle(e).paddingBottom);
-
-        var height = basicHeight + marginTop + marginBottom + paddingTop + paddingBottom;
-
-        totalHeight += height;
-    });
-    document.querySelector(".product-list").style.maxHeight = totalHeight + "px";
+        // Auto-resize readonly textareas (table description)
+        document.querySelectorAll('textarea[readonly]').forEach(t => {
+            t.style.height = t.scrollHeight + 'px';
+            t.style.resize = 'none';
+        });
+    })();
 </script>

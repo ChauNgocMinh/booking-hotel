@@ -1,69 +1,95 @@
 ﻿@model IEnumerable<HoaDon>
-<div class="container" >
-    <div class="row">
-        <h1 class="text-center bg-primary">Danh sách các hóa đơn</h1>
-        <div class="col-12">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>Mã hóa đơn</th>
-                        <th>Ngày in</th>
-                        <th>Tổng tiền</th>
-                        <th>Chi tiết</th>
-                        <th>Xóa</th>
-                    </tr>
-                </thead>
+@{
+    Layout = "_AdminLayout";
+}
+<div class="container-fluid py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Danh sách hóa đơn</h3>
+    </div>
 
-                <tbody>
-                    @{
-                        int i = 1;
-                        foreach(var hoadon in Model)
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive" style="max-height:72vh; overflow:auto;">
+                <table class="table table-hover table-striped mb-0 align-middle">
+                    <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
+                        <tr>
+                            <th style="width:70px">STT</th>
+                            <th>Mã hóa đơn</th>
+                            <th>Ngày in</th>
+                            <th>Tổng tiền</th>
+                            <th>Chi tiết</th>
+                            <th class="text-center" style="width:140px">Hành động</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model == null || !Model.Any())
                         {
                             <tr>
-                                <th>@(i++)</th>
-                                <th>@hoadon.MaHoaDon</th>
-                                <th>@hoadon.NgayIn</th>
-                                <th>@String.Format("{0:N0}",@hoadon.TongTien)</th>
-                                <th>
-                                    <a target="_blank" class="btn btn-primary" asp-action="chiTietHoaDon" asp-route-mahoadon="@hoadon.MaHoaDon">Chi tiết</a>
-                                </th>
+                                <td colspan="6" class="text-center text-muted py-4">Không có hóa đơn nào.</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            var idx = 1;
+                            foreach (var hoadon in Model)
+                            {
+                                var delId = "del_" + hoadon.MaHoaDon;
+                                <tr>
+                                    <td>@(idx++)</td>
+                                    <td>@hoadon.MaHoaDon</td>
+                                    <td>
+                                        @(
+                                                                        hoadon.NgayIn is DateTime dt
+                                                                        ? dt.ToString("dd/MM/yyyy HH:mm")
+                                                                        : (hoadon.NgayIn?.ToString() ?? "")
+                                                                        )
+                                    </td>
+                                    <td>@String.Format("{0:N0}", hoadon.TongTien)</td>
+                                    <td>
+                                        <a target="_blank" class="btn btn-sm btn-outline-primary" asp-action="chiTietHoaDon" asp-route-mahoadon="@hoadon.MaHoaDon">
+                                            <i class="bi bi-box-arrow-up-right"></i> Chi tiết
+                                        </a>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#@delId">
+                                                <i class="bi bi-trash"></i> Xóa
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
 
-                                <th>
-                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#@hoadon.MaHoaDon">
-                                        Xóa 
-                                    </button>
-                                    <!-- The Modal -->
-                                    <div class="modal" id="@hoadon.MaHoaDon">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content">
+                                <!-- Modal XÓA -->
+                                <div class="modal fade" id="@delId" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Xóa hóa đơn</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
 
-                                                <!-- Modal Header -->
-                                                <div class="modal-header">
-                                                    <h4 class="modal-title text-center">Xóa hóa đơn</h4>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
+                                            <div class="modal-body">
+                                                <p class="mb-0">Bạn có chắc muốn xóa hóa đơn <strong>@hoadon.MaHoaDon</strong>?</p>
+                                                @* Nếu cần hiển thị mã order phòng để xóa route *@
+                                                @if (hoadon.MaOrderPhongNavigation != null)
+                                                {
+                                                    <p class="small text-muted mt-2">Mã order liên quan: @hoadon.MaOrderPhongNavigation.MaOrderPhong</p>
+                                                }
+                                            </div>
 
-                                                <!-- Modal body -->
-                                                <div class="modal-body">
-                                                    Bạn có muốn xóa không ?
-                                                </div>
-
-                                                <!-- Modal footer -->
-                                                <div class="modal-footer">
-                                                <a class="btn btn-danger" asp-action="xoaHoadon" asp-route-maorder="@hoadon.MaOrderPhongNavigation.MaOrderPhong">Xác nhận</a>
-                                                </div>
-
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                                <a class="btn btn-danger" asp-action="xoaHoadon" asp-route-maorder="@hoadon.MaOrderPhongNavigation?.MaOrderPhong">Xác nhận</a>
                                             </div>
                                         </div>
                                     </div>
-                                </th>
-                            </tr>
+                                </div>
+                            }
                         }
-                    }
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
-
     </div>
-</div>
+</div>  

@@ -1,148 +1,197 @@
 ﻿@model IEnumerable<DichVu>
-<div class="container">
-    <div class="row">
-        <div class="col-12">
-            @{
-                if(ViewBag.error == false)
-                {
-                    <h1 class="text-center text-danger">Trùng mã dịch vụ, vui lòng chọn mã dịch vụ khác</h1>
-                }
-            }
-            <h1 class="text-center bg-primary"> Quản lý dịch vụ</h1>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal" > Thêm dịch vụ</button>
-            <!-- The Modal -->
-            <div class="modal" id="myModal">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
+@{
+    Layout = "_AdminLayout";
+}
 
-                        <!-- Modal Header -->
-                        <div class="modal-header">
-                            <h4 class="modal-title">Modal Heading</h4>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
+<div class="container-fluid py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Quản lý dịch vụ</h3>
 
-                        <!-- Modal body -->
-                        <div class="modal-body">
-                            <form method="post" class="form-group" asp-action="themDichVu">
-                                <label class="form-label">Mã dịch vụ</label>
-                                <input class="form-control" name="madichvu" />
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAddService">
+                <i class="bi bi-plus-lg"></i> Thêm dịch vụ
+            </button>
+        </div>
+    </div>
 
-                                <label class="form-label">Tên dịch vụ</label>
-                                <input class="form-control" name="tendichvu"/>
-                                
-                                <label class="form-label">Giá dịch vụ</label>
-                                <input class="form-control" name="giadichvu" type="number" />
+    @if (ViewBag.error != null && ViewBag.error == false)
+    {
+        <div class="alert alert-danger text-center">Trùng mã dịch vụ, vui lòng chọn mã dịch vụ khác</div>
+    }
 
-                                <!-- Modal footer -->
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Xác nhận</button>
-                                </div>
-
-                            </form>
-                        </div>
-
-
-                    </div>
-                </div>
-            </div>
-
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>Mã dịch vụ</th>
-                        <th>Tên dịch vụ</th>
-                        <th>Giá dịch vụ</th>
-                        <th>Sửa</th>
-                        <th>Xóa</th>
-                    </tr>
-
-                </thead>
-
-                <tbody>
-                    @{
-                        int i = 1;
-                        foreach (var dichvu in Model)
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive" style="max-height:70vh; overflow:auto;">
+                <table class="table table-hover table-striped mb-0 align-middle">
+                    <thead class="table-light" style="position:sticky; top:0; z-index:1;">
+                        <tr>
+                            <th style="width:60px">STT</th>
+                            <th>Mã dịch vụ</th>
+                            <th>Tên dịch vụ</th>
+                            <th>Giá dịch vụ</th>
+                            <th class="text-center" style="width:220px">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int i = 1;
+                            foreach (var dichvu in Model)
+                            {
+                                var editId = "modalEdit_" + dichvu.MaDichVu;
+                                var delId = "modalDelete_" + dichvu.MaDichVu;
+                            }
+                        }
+                        @if (!Model?.Any() ?? true)
                         {
                             <tr>
-                                <th>@(i++)</th>
-                                <th>@dichvu.MaDichVu</th>
-                                <th>@dichvu.TenDichVu</th>
-                                <th>@String.Format("{0:N0}",dichvu.GiaDichVu)</th>
-                                <th>
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#@dichvu.MaDichVu">
-                                        Sửa
-                                    </button>
-
-                                    <div class="modal" id="@dichvu.MaDichVu">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content">
-
-                                                <!-- Modal Header -->
-                                                <div class="modal-header">
-                                                    <h4 class="modal-title">Sửa dịch vụ</h4>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
-
-                                                <!-- Modal body -->
-                                                <div class="modal-body">
-                                                    <form class="form-group" method="post" asp-action="updateDichVu">
-                                                        <label class="form-label">Mã dịch vụ</label>
-                                                        <input class="form-control"  value="@dichvu.MaDichVu" name="madichvu"/>
-
-                                                        <label class="form-label">Tên dịch vụ</label>
-                                                        <input class="form-control"  value="@dichvu.TenDichVu" name="tendichvu"/>
-
-                                                        <label class="form-label">Giá dịch vụ</label>
-                                                        <input class="form-control"  value="@dichvu.GiaDichVu"  type="number"  name="giadichvu"/>
-                                                        
-                                                        <div class="modal-footer">
-                                                            <button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Xác nhận</button>
-                                                        </div>
-                                                   
-                                                    </form>
-                                                </div>
-
-                                                <!-- Modal footer -->
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </th>
-
-                                <th>
-                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#@("x" + dichvu.MaDichVu)" >Xóa</button>
-
-                                    <!-- The Modal -->
-                                    <div class="modal" id="@("x" + dichvu.MaDichVu)">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content">
-
-                                                <!-- Modal Header -->
-                                                <div class="modal-header">
-                                                    <h4 class="modal-title">Xóa dịch vụ</h4>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
-
-                                                <!-- Modal body -->
-                                                <div class="modal-body">
-                                                    <div class="text-center">Bạn có muốn xóa ?</div>
-                                                </div>
-
-                                                <!-- Modal footer -->
-                                                <div class="modal-footer">
-                                                    <a class="btn btn-danger" asp-action="xoaDichVu" asp-route-madichvu="@dichvu.MaDichVu">Xóa</a>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </th>
+                                <td colspan="5" class="text-center py-4 text-muted">Không có dịch vụ nào.</td>
                             </tr>
                         }
-                    }
-                </tbody>
-            </table>
+                        else
+                        {
+                            int idx = 1;
+                            foreach (var dichvu in Model)
+                            {
+                                var editId = "modalEdit_" + dichvu.MaDichVu;
+                                var delId = "modalDelete_" + dichvu.MaDichVu;
+                                <tr>
+                                    <td>@(idx++)</td>
+                                    <td>@dichvu.MaDichVu</td>
+                                    <td>@dichvu.TenDichVu</td>
+                                    <td>@String.Format("{0:N0}", dichvu.GiaDichVu)</td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#@editId">
+                                                <i class="bi bi-pencil"></i> Sửa
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#@delId">
+                                                <i class="bi bi-trash"></i> Xóa
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- Modal SỬA -->
+                                <div class="modal fade" id="@editId" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <form method="post" asp-action="updateDichVu" class="needs-validation" novalidate>
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Sửa dịch vụ - @dichvu.MaDichVu</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+
+                                                <div class="modal-body">
+                                                    <input type="hidden" name="madichvu" value="@dichvu.MaDichVu" />
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Mã dịch vụ</label>
+                                                        <input class="form-control" name="madichvu_display" value="@dichvu.MaDichVu" readonly />
+                                                        <small class="form-text text-muted">Mã dịch vụ không thể sửa (nếu cần đổi, tạo dịch vụ mới).</small>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Tên dịch vụ</label>
+                                                        <input class="form-control" name="tendichvu" value="@dichvu.TenDichVu" required />
+                                                        <div class="invalid-feedback">Vui lòng nhập tên dịch vụ.</div>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Giá dịch vụ</label>
+                                                        <input class="form-control" name="giadichvu" type="number" min="0" value="@dichvu.GiaDichVu" required />
+                                                        <div class="invalid-feedback">Vui lòng nhập giá hợp lệ.</div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                                    <button type="submit" class="btn btn-primary">Lưu</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Modal XÓA -->
+                                <div class="modal fade" id="@delId" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Xóa dịch vụ</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+
+                                            <div class="modal-body">
+                                                <p class="mb-0">Bạn có chắc muốn xóa dịch vụ <strong>@dichvu.TenDichVu</strong> (Mã: @dichvu.MaDichVu)?</p>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                                <a class="btn btn-danger" asp-action="xoaDichVu" asp-route-madichvu="@dichvu.MaDichVu">Xóa</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- Modal THÊM -->
+<div class="modal fade" id="modalAddService" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post" asp-action="themDichVu" class="needs-validation" novalidate>
+                <div class="modal-header">
+                    <h5 class="modal-title">Thêm dịch vụ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Mã dịch vụ</label>
+                        <input class="form-control" name="madichvu" required />
+                        <div class="invalid-feedback">Vui lòng nhập mã dịch vụ.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tên dịch vụ</label>
+                        <input class="form-control" name="tendichvu" required />
+                        <div class="invalid-feedback">Vui lòng nhập tên dịch vụ.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Giá dịch vụ</label>
+                        <input class="form-control" name="giadichvu" type="number" min="0" required />
+                        <div class="invalid-feedback">Vui lòng nhập giá hợp lệ.</div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-danger">Xác nhận</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Client-side: bootstrap validation -->
+<script>
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>

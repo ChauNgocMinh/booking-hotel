@@ -1,0 +1,291 @@
+﻿@inject IHttpContextAccessor accessor
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --sidebar-width: 280px;
+            --header-height: 64px;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #f4f6f8;
+        }
+
+        /* Header */
+        header.admin-top {
+            height: var(--header-height);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+            background: #ffffff;
+            border-bottom: 1px solid #e5e9ef;
+        }
+
+        /* Sidebar */
+        nav.admin-sidebar {
+            width: var(--sidebar-width);
+            min-height: 100vh;
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            bottom: 0;
+            overflow: auto;
+            background: #fff;
+            border-right: 1px solid #e5e9ef;
+            transition: width .2s ease, transform .2s ease;
+        }
+
+            /* Collapsed sidebar */
+            nav.admin-sidebar.collapsed {
+                width: 72px;
+            }
+
+            nav.admin-sidebar .sidebar-label {
+                transition: opacity .15s ease;
+            }
+
+            nav.admin-sidebar.collapsed .sidebar-label {
+                opacity: 0;
+            }
+
+        /* Content area */
+        main.admin-content {
+            margin-top: var(--header-height);
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            transition: margin-left .2s ease;
+        }
+
+        nav.admin-sidebar.collapsed ~ main.admin-content {
+            margin-left: 72px;
+        }
+
+        /* Sidebar links */
+        .nav-link.active {
+            background: #e9f5ff;
+            color: #0d6efd !important;
+            font-weight: 600;
+        }
+
+        .user-badge {
+            font-size: 0.85rem;
+        }
+
+        /* Small screens */
+        @@media (max-width: 767.98px) {
+            nav.admin-sidebar {
+                transform: translateX(-100%);
+                top: var(--header-height);
+            }
+
+                nav.admin-sidebar.show-mobile {
+                    transform: translateX(0);
+                    position: fixed;
+                    z-index: 1050;
+                }
+
+            main.admin-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="admin-top d-flex align-items-center px-3">
+        <div class="d-flex align-items-center gap-2">
+            <!-- toggle sidebar -->
+            <button id="btnToggleSidebar" class="btn btn-sm btn-outline-secondary me-2" type="button" aria-label="Toggle sidebar">
+                <i class="bi bi-list"></i>
+            </button>
+
+            <a class="navbar-brand mb-0" href="/">
+                <span class="fw-bold">Paradise Hotel - Admin</span>
+            </a>
+        </div>
+
+        <div class="ms-auto d-flex align-items-center gap-3">
+            @{
+                // Lấy username theo thứ tự admin -> nhanvien -> UserName
+                var session = accessor.HttpContext?.Session;
+                var adminName = session?.GetString("admin");
+                var staffName = session?.GetString("nhanvien");
+                var userNameOnly = session?.GetString("UserName");
+                var displayName = adminName ?? staffName ?? userNameOnly ?? "Khách";
+                string role;
+                if (!string.IsNullOrEmpty(adminName)) role = "Administrator";
+                else if (!string.IsNullOrEmpty(staffName)) role = "Nhân viên";
+                else if (!string.IsNullOrEmpty(userNameOnly)) role = "Người dùng";
+                else role = "Khách";
+            }
+
+            <div class="d-flex align-items-center">
+                <div class="d-none d-md-block text-end">
+                    <div class="fw-semibold">@displayName</div>
+                    <small class="text-muted">@role</small>
+                </div>
+            </div>
+
+            <div class="dropdown">
+                <a class="btn btn-outline-secondary btn-sm dropdown-toggle" href="#" role="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-person-circle"></i>
+                </a>
+
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                    <li><a class="dropdown-item" asp-controller="Login" asp-action="Profile">Hồ sơ</a></li>
+                    <li><a class="dropdown-item" asp-controller="Login" asp-action="ChangePassword">Đổi mật khẩu</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" asp-controller="Login" asp-action="Logout">Đăng xuất</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- SIDEBAR -->
+    <nav id="adminSidebar" class="admin-sidebar">
+        <div class="p-3">
+            <ul class="nav nav-pills flex-column mb-0">
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Admin" asp-action="Index">
+                        <i class="bi bi-speedometer2 me-2"></i>
+                        <span class="sidebar-label">Dashboard</span>
+                    </a>
+                </li>
+
+                @* ADMIN menu *@
+                @if (!string.IsNullOrEmpty(adminName))
+                {
+                    <li class="nav-item mt-2">
+                        <span class="text-uppercase small text-muted px-3">Quản lý</span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Admin" asp-action="QLPhong">
+                            <i class="bi bi-house-door me-2"></i>
+                            <span class="sidebar-label">Quản lý phòng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Admin" asp-action="QLDichVu">
+                            <i class="bi bi-box-seam me-2"></i>
+                            <span class="sidebar-label">Quản lý dịch vụ</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Admin" asp-action="QLHoaDon">
+                            <i class="bi bi-receipt me-2"></i>
+                            <span class="sidebar-label">Quản lý hóa đơn</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Admin" asp-action="QLUser">
+                            <i class="bi bi-people me-2"></i>
+                            <span class="sidebar-label">Quản lý khách hàng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Admin" asp-action="QLTaiKhoan">
+                            <i class="bi bi-person-gear me-2"></i>
+                            <span class="sidebar-label">Quản lý tài khoản</span>
+                        </a>
+                    </li>
+                }
+                else if (!string.IsNullOrEmpty(staffName))
+                {
+                    <li class="nav-item mt-2">
+                        <span class="text-uppercase small text-muted px-3">Nhân viên</span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Admin" asp-action="QLPhong">
+                            <i class="bi bi-house-door me-2"></i>
+                            <span class="sidebar-label">Quản lý phòng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Admin" asp-action="QLDichVu">
+                            <i class="bi bi-box-seam me-2"></i>
+                            <span class="sidebar-label">Quản lý dịch vụ</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Admin" asp-action="QLHoaDon">
+                            <i class="bi bi-receipt me-2"></i>
+                            <span class="sidebar-label">Quản lý hóa đơn</span>
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Index">
+                            <i class="bi bi-house me-2"></i>
+                            <span class="sidebar-label">Trang chủ</span>
+                        </a>
+                    </li>
+                }
+
+                <li class="nav-item mt-3">
+                    <hr />
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-danger" asp-controller="Login" asp-action="Logout">
+                        <i class="bi bi-box-arrow-right me-2"></i>
+                        <span class="sidebar-label">Đăng xuất</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="admin-content">
+        @RenderBody()
+    </main>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        (function () {
+            const btn = document.getElementById('btnToggleSidebar');
+            const sidebar = document.getElementById('adminSidebar');
+
+            btn.addEventListener('click', function (evt) {
+                evt.stopPropagation();
+                // For mobile: toggle show-mobile class
+                if (window.innerWidth < 768) {
+                    sidebar.classList.toggle('show-mobile');
+                    return;
+                }
+                // Desktop: collapse/expand
+                sidebar.classList.toggle('collapsed');
+            });
+
+            // close mobile sidebar when clicking outside
+            document.addEventListener('click', function (e) {
+                if (window.innerWidth < 768) {
+                    if (!sidebar.contains(e.target) && !btn.contains(e.target)) {
+                        sidebar.classList.remove('show-mobile');
+                    }
+                }
+            });
+        })();
+    </script>
+
+</body>
+</html>

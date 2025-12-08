@@ -1,263 +1,268 @@
 ﻿@model LoaiTaiKhoan_TaiKhoan_NhanVien_KhacHang
-<div class="container">
-    <h1 class="text-center bg-primary">Quản lý tài khoản</h1>
-    <div class="row">
-        <div class="col-12">
-            <h2>Các loại tài khoản</h2>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>Mã loại</th>
-                        <th>Tên loại</th>
-                        <th>Sửa</th>
-                        <th>Xóa</th>
-                    </tr>
-                </thead>
+@{
+    Layout = "_AdminLayout";
+}
 
-                <tbody>
-                    @{
-                        int i = 1;
-                        foreach (var loaitaikhoan in Model.loaiTaiKhoans)
+<div class="container-fluid py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Quản lý tài khoản</h3>
+    </div>
+
+    <!-- Loại tài khoản -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>Các loại tài khoản</strong>
+            <!-- nút thêm (nếu cần) -->
+            <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#addRoleModal">
+                <i class="bi bi-plus-lg"></i> Thêm loại
+            </button>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive" style="max-height:48vh; overflow:auto;">
+                <table class="table table-hover table-striped mb-0 align-middle">
+                    <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
+                        <tr>
+                            <th style="width:70px">STT</th>
+                            <th>Mã loại</th>
+                            <th>Tên loại</th>
+                            <th class="text-center" style="width:160px">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model?.loaiTaiKhoans == null || !Model.loaiTaiKhoans.Any())
                         {
                             <tr>
-                                <th>@(i++)</th>
-                                <th>@loaitaikhoan.MaLoaiTaiKhoan</th>
-                                <th>@loaitaikhoan.TenLoai</th>
-                                <th>
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#@loaitaikhoan.MaLoaiTaiKhoan">
-                                        Sửa
-                                    </button>
-
-                                    <!-- The Modal -->
-                                    <div class="modal" id="@loaitaikhoan.MaLoaiTaiKhoan">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content">
-
-                                                <!-- Modal Header -->
-                                                <div class="modal-header">
-                                                    <h4 class="modal-title">Sửa loại tài khoản</h4>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
-
-                                                <!-- Modal body -->
-                                                <div class="modal-body">
-                                                    <form class="form-group" method="post" asp-action="updateLoaiTaiKhoan">
-                                                        <label class="form-label">Mã loại tài khoản</label>
-                                                        <input class="form-control" value="@loaitaikhoan.MaLoaiTaiKhoan" name="maloaitaikhoan">
-
-                                                        <label class="form-label">Tên loại</label>
-                                                        <input class="form-control" value="@loaitaikhoan.TenLoai" name="tenloaitaikhoan">
-
-                                                        <!-- Modal footer -->
-                                                        <div class="modal-footer">
-                                                            <button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                                                        </div>
-
-                                                    </form>
-                                                </div>
-
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </th>
-
-                                <th>
-                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#@("x" + loaitaikhoan.MaLoaiTaiKhoan)">
-                                        Xóa
-                                    </button>
-                                    <!-- The Modal -->
-                                    <div class="modal" id="@("x" + loaitaikhoan.MaLoaiTaiKhoan)">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content">
-
-                                                <!-- Modal Header -->
-                                                <div class="modal-header">
-                                                    <h4 class="modal-title">Xóa loại tài khoản</h4>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
-
-                                                <!-- Modal body -->
-                                                <div class="modal-body">
-                                                    <form class="form-group">
-                                                        <label class="form-label">Mã loại tài khoản</label>
-                                                        <input class="form-control" value="@loaitaikhoan.MaLoaiTaiKhoan" name="maloaitaikhoan">
-
-                                                        <label class="form-label">Tên loại</label>
-                                                        <input class="form-control" value="@loaitaikhoan.TenLoai" name="tenloaitaikhoan">
-
-                                                        <!-- Modal footer -->
-                                                        <div class="modal-footer">
-                                                            <button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Xóa</button>
-                                                        </div>
-
-                                                    </form>
-                                                </div>
-
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </th>
+                                <td colspan="4" class="text-center text-muted py-4">Không có loại tài khoản nào.</td>
                             </tr>
                         }
-                    }
-                </tbody>
-            </table>
-        </div>
-        <div class="col-12">
-            <h2>Tài khoản nhân viên</h2>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>Mã tài khoản</th>
-                        <th>User name</th>
-                        <th>Password</th>
-                        <th>Loại tài khoản</th>
-                        <th>Person ID</th>
-                        <th>Sửa</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @{
-                        int x = 1;
-                        foreach (var nhanvien in Model.nhanviens)
+                        else
                         {
-                            foreach (var tk in nhanvien.NhanVienNavigation.TaiKhoans)
+                            var idx = 1;
+                            foreach (var role in Model.loaiTaiKhoans)
                             {
+                                var editId = "edit_role_" + role.MaLoaiTaiKhoan;
+                                var delId = "del_role_" + role.MaLoaiTaiKhoan;
                                 <tr>
-                                    <th>@(x++)</th>
-                                    <th>@tk.MaTaiKhoan</th>
-                                    <th>@tk.UserName</th>
-                                    <th>@tk.Password</th>
-                                    <th>@tk.LoaiTaiKhoan - @tk.LoaiTaiKhoanNavigation.TenLoai</th>
-                                    <th>@tk.Person.PersonId</th>
-                                    <th>
-                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#@tk.MaTaiKhoan">
-                                            Sửa
-                                        </button>
-
-                                        <!-- The Modal -->
-                                        <div class="modal" id="@tk.MaTaiKhoan">
-                                            <div class="modal-dialog modal-dialog-centered">
-                                                <div class="modal-content">
-
-                                                    <!-- Modal Header -->
-                                                    <div class="modal-header">
-                                                        <h4 class="modal-title">Sủa tài khoản nhân viên</h4>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                    </div>
-
-                                                    <!-- Modal body -->
-                                                    <div class="modal-body">
-                                                        <form class="form-group" asp-action="updateTaiKhoanNhanVien">
-                                                            <label class="form-label">Tài khoản</label>
-                                                            <input type="hidden" value="@tk.MaTaiKhoan" name="mataikhoan">
-                                                            <input class="form-control" value="@tk.UserName" name="username">
-
-                                                            <label class="form-label">Mật khẩu</label>
-                                                            <input class="form-control" value="@tk.Password" name="password">
-
-                                                            <!-- Modal footer -->
-                                                            <div class="modal-footer">
-                                                                <button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Xác nhận</button>
-                                                            </div>
-
-                                                        </form>
-                                                    </div>
-
-                                                </div>
-                                            </div>
+                                    <td>@(idx++)</td>
+                                    <td>@role.MaLoaiTaiKhoan</td>
+                                    <td>@role.TenLoai</td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#@editId">
+                                                <i class="bi bi-pencil"></i> Sửa
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#@delId">
+                                                <i class="bi bi-trash"></i> Xóa
+                                            </button>
                                         </div>
-                                    </th>
-                                </tr>
-                            }
-                        }
-                    }
-                </tbody>
-            </table>
-        </div>
-
-        <div class="col-12">
-            <h2>Tài khoản khách hàng</h2>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>Mã tài khoản</th>
-                        <th>User name</th>
-                        <th>Password</th>
-                        <th>Loại tài khoản</th>
-                        <th>Person ID</th>
-                        <th>Sửa</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @{
-                        int y = 1;
-                        foreach (var khachhang in Model.khachhangs)
-                        {
-                            foreach (var taikhoan in khachhang.KhachHangNavigation.TaiKhoans)
-                            {
-                                <tr>
-                                    <th>@(y++)</th>
-                                    <th>@taikhoan.MaTaiKhoan</th>
-                                    <th>@taikhoan.UserName</th>
-                                    <th>@taikhoan.Password</th>
-                                    <th>@taikhoan.LoaiTaiKhoan</th>
-                                    <th>@taikhoan.Person.PersonId</th>
-
-                                    <th>
-                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#@taikhoan.MaTaiKhoan">
-                                            Sửa
-                                        </button>
-
-                                        <!-- The Modal -->
-                                        <div class="modal" id="@taikhoan.MaTaiKhoan">
-                                            <div class="modal-dialog modal-dialog-centered">
-                                                <div class="modal-content">
-
-                                                    <!-- Modal Header -->
-                                                    <div class="modal-header">
-                                                        <h4 class="modal-title">Sủa tài khoản khách hàng</h4>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                    </div>
-
-                                                    <!-- Modal body -->
-                                                    <div class="modal-body">
-                                                        <form class="form-group" asp-action="updateTaiKhoanNhanVien">
-                                                            <label class="form-label">Tài khoản</label>
-                                                            <input type="hidden" value="@taikhoan.MaTaiKhoan" name="mataikhoan">
-                                                            <input class="form-control" value="@taikhoan.UserName" name="username">
-
-                                                            <label class="form-label">Mật khẩu</label>
-                                                            <input class="form-control" value="@taikhoan.Password" name="password">
-
-                                                            <!-- Modal footer -->
-                                                            <div class="modal-footer">
-                                                                <button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Xác nhận</button>
-                                                            </div>
-
-                                                        </form>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </th>
-
+                                    </td>
                                 </tr>
 
+                                <!-- Modal Sửa loại -->
+                                <div class="modal fade" id="@editId" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <form method="post" asp-action="updateLoaiTaiKhoan" class="needs-validation" novalidate>
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Sửa loại tài khoản - @role.MaLoaiTaiKhoan</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+
+                                                <div class="modal-body">
+                                                    <input type="hidden" name="MaLoaiTaiKhoan" value="@role.MaLoaiTaiKhoan" />
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Mã loại</label>
+                                                        <input class="form-control" name="MaLoaiTaiKhoan_display" value="@role.MaLoaiTaiKhoan" readonly />
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Tên loại</label>
+                                                        <input class="form-control" name="TenLoai" value="@role.TenLoai" required />
+                                                        <div class="invalid-feedback">Vui lòng nhập tên loại.</div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                                    <button type="submit" class="btn btn-primary">Lưu</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Modal Xóa loại -->
+                                <div class="modal fade" id="@delId" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Xóa loại tài khoản</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Bạn có chắc muốn xóa loại tài khoản <strong>@role.TenLoai</strong> (Mã: @role.MaLoaiTaiKhoan)?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                                <a class="btn btn-danger" asp-action="xoaLoaiTaiKhoan" asp-route-maloai="@role.MaLoaiTaiKhoan">Xóa</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             }
                         }
-                    }
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>Tài khoản khách hàng</strong>
+            <a class="btn btn-sm btn-outline-secondary" asp-action="ThemTaiKhoanKhachHang">Thêm tài khoản</a>
+        </div>
 
+        <div class="card-body p-0">
+            <div class="table-responsive" style="max-height:48vh; overflow:auto;">
+                <table class="table table-hover table-striped mb-0 align-middle">
+                    <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
+                        <tr>
+                            <th style="width:70px">STT</th>
+                            <th>Mã tài khoản</th>
+                            <th>User name</th>
+                            <th>Mật khẩu</th>
+                            <th>Loại</th>
+                            <th>Person ID</th>
+                            <th class="text-center" style="width:150px">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model?.khachhangs == null || !Model.khachhangs.Any())
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4">Không có tài khoản khách hàng.</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            var idx2 = 1;
+                            foreach (var kh in Model.khachhangs)
+                            {
+                                foreach (var tk in kh.KhachHangNavigation.TaiKhoans)
+                                {
+                                    var editId = "edit_cust_" + tk.MaTaiKhoan;
+                                    <tr>
+                                        <td>@(idx2++)</td>
+                                        <td>@tk.MaTaiKhoan</td>
+                                        <td>@tk.UserName</td>
+                                        <td>@tk.Password</td>
+                                        <td>@tk.LoaiTaiKhoan - @tk.LoaiTaiKhoanNavigation?.TenLoai</td>
+                                        <td>@tk.Person?.PersonId</td>
+                                        <td class="text-center">
+                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#@editId">
+                                                <i class="bi bi-pencil"></i> Sửa
+                                            </button>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Modal sửa tài khoản khách hàng -->
+                                    <div class="modal fade" id="@editId" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <form method="post" asp-action="updateTaiKhoanKhachHang" class="needs-validation" novalidate>
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Sửa tài khoản - @tk.UserName</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+
+                                                    <div class="modal-body">
+                                                        <input type="hidden" name="MaTaiKhoan" value="@tk.MaTaiKhoan" />
+                                                        <div class="mb-3">
+                                                            <label class="form-label">User name</label>
+                                                            <input class="form-control" name="UserName" value="@tk.UserName" required />
+                                                            <div class="invalid-feedback">Vui lòng nhập username.</div>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Mật khẩu</label>
+                                                            <input class="form-control" name="Password" value="@tk.Password" required />
+                                                            <div class="invalid-feedback">Vui lòng nhập mật khẩu.</div>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Loại tài khoản</label>
+                                                            <select class="form-select" name="LoaiTaiKhoan" required>
+                                                                @foreach (var lt in Model.loaiTaiKhoans)
+                                                                {
+                                                                    <option value="@lt.MaLoaiTaiKhoan" selected="@(lt.MaLoaiTaiKhoan == tk.LoaiTaiKhoan ? "selected" : null)">
+                                                                        @lt.TenLoai
+                                                                    </option>
+                                                                }
+                                                            </select>
+                                                            <div class="invalid-feedback">Chọn loại tài khoản.</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                                        <button type="submit" class="btn btn-primary">Lưu</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- Modal Thêm loại tài khoản -->
+<div class="modal fade" id="addRoleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post" asp-action="themLoaiTaiKhoan" class="needs-validation" novalidate>
+                <div class="modal-header">
+                    <h5 class="modal-title">Thêm loại tài khoản</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Mã loại</label>
+                        <input class="form-control" name="maloaitk" required />
+                        <div class="invalid-feedback">Vui lòng nhập mã loại.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tên loại</label>
+                        <input class="form-control" name="tenloai" required />
+                        <div class="invalid-feedback">Vui lòng nhập tên loại.</div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-danger">Thêm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        'use strict';
+        var forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
