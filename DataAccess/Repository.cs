@@ -285,9 +285,27 @@ namespace HotelManagement.DataAccess
             return result;
         }
 
+        //public int funcGetLastIndex(List<string> maid, int vt)
+        //{
+        //    List<int> STT = maid.Select(ma => int.TryParse(ma.Substring(vt), out int number) ? number : -1).Where(number => number != -1).ToList();
+        //    STT.Sort();
+        //    return STT[STT.Count - 1];
+        //}
         public int funcGetLastIndex(List<string> maid, int vt)
         {
-            List<int> STT = maid.Select(ma => int.TryParse(ma.Substring(vt), out int number) ? number : -1).Where(number => number != -1).ToList();
+            var STT = maid
+                .Select(ma =>
+                {
+                    if (ma.Length > vt && int.TryParse(ma.Substring(vt), out int number))
+                        return number;
+                    return -1;
+                })
+                .Where(n => n != -1)
+                .ToList();
+
+            if (STT.Count == 0)
+                return 0; // nếu không có mã nào hợp lệ, trả về 0
+
             STT.Sort();
             return STT[STT.Count - 1];
         }
