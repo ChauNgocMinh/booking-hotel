@@ -29,22 +29,21 @@ namespace HotelManagement.Controllers
         public IActionResult Login(TaiKhoan account)
         {
             httpContextAccessor.HttpContext.Session.Clear();
+
             TaiKhoan check = repo.CheckAccount(account);
+
             if (check != null)
             {
                 switch (check.LoaiTaiKhoan)
                 {
                     case "LTK1":
                         httpContextAccessor.HttpContext.Session.SetString("admin", account.UserName);
-                        break;
-                    case "LTK2":
-                        httpContextAccessor.HttpContext.Session.SetString("nhanvien", account.UserName);
-                        break;
-                    default:
+                        return RedirectToAction("QLPhong", "Admin"); 
+
+                    default: 
                         httpContextAccessor.HttpContext.Session.SetString("UserName", account.UserName);
-                        break;
+                        return RedirectToAction("Index", "Home");
                 }
-                return RedirectToAction("Index", "Home");
             }
 
             ModelState.AddModelError("", "Tài khoản hoặc mật khẩu không chính xác");
