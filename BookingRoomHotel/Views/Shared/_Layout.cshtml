@@ -1,0 +1,300 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - BookingRoomHotel</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Merienda:wght@400;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <!-- Swiper -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper@7.0.8/swiper-bundle.min.css" />
+
+    <!-- Template CSS -->
+    <link rel="stylesheet" href="~/css/animate.css" />
+    <link rel="stylesheet" href="~/css/owl.carousel.min.css" />
+    <link rel="stylesheet" href="~/css/owl.theme.default.min.css" />
+    <link rel="stylesheet" href="~/css/magnific-popup.css" />
+    <link rel="stylesheet" href="~/css/aos.css" />
+    <link rel="stylesheet" href="~/css/bootstrap-datepicker.css" />
+
+    <!-- Icon sets (keep only 1 copy each) -->
+    <link rel="stylesheet" href="~/css/ionicons.min.css" />
+    <link rel="stylesheet" href="~/css/flaticon.css" />
+    <link rel="stylesheet" href="~/css/icomoon.css" />
+
+    <!-- Bootstrap Core -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Main site CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+
+    <!-- Extra assets -->
+    <link rel="stylesheet" href="~/css/assets/css/bootstrap.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/assets/css/feathericon.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/assets/css/style.css" asp-append-version="true" />
+
+    <!-- System -->
+    <link rel="stylesheet" href="~/BookingRoomHotel.styles.css" asp-append-version="true" />
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="~/assets/img/favicon.png" />
+</head>
+<style>
+    .top-nav-search input::placeholder {
+        color: #000 !important;
+    }
+</style>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-white px-lg-3 py-lg-2 shadow-sm sticky-top" id="navHome">
+            <div class="container-fluid">
+                <a class="navbar-brand me-5 fw-bold fs-3 h-font" asp-controller="Home" asp-action="Index">Đặt phòng Khách sạn</a>
+                <button class="navbar-toggler shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active me-2" asp-controller="Home" asp-action="Index">Trang chủ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link me-2" asp-controller="Home" asp-action="LoaiPhongs">Loại phòng</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link me-2" href="#">Tiện ích</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link me-2" asp-controller="Home" asp-action="Contact">Liên hệ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link me-2" href="#">Giới thiệu</a>
+                        </li>
+                    </ul>
+
+                    <div class="top-nav-search">
+                        <form>
+                            <input type="text" class="form-control" placeholder="Tìm kiếm...">
+                            <button class="btn sear" type="submit"></button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Modal chung -->
+    <div class="modal fade zoom formModal" id="successModal" style="z-index: 1500;" tabindex="0" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content card">
+                <div class="modal-header alert-success">
+                    <h5 class="m-0">Thành công</h5>
+                </div>
+                <div class="modal-body messageModal" id="successMessage"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade zoom formModal" style="z-index: 1500;" id="errorModal" tabindex="0" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content card">
+                <div class="modal-header alert-danger">
+                    <h5 class="m-0">Lỗi</h5>
+                </div>
+                <div class="modal-body messageModal" id="errorMessage"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Đăng nhập -->
+    <div class="modal fade" id="loginModal" style="z-index: 1080;" data-backdrop="static" data-keyboard="false" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form onsubmit="return loginCustomer()" id="loginForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title d-flex align-items-center">
+                            <i class="bi bi-person-heart me-2"></i> Đăng nhập người dùng
+                        </h5>
+                        <button type="reset" class="close shadow-none" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Tên đăng nhập</label>
+                            <input type="text" name="TenDangNhap" class="form-control shadow-none" pattern="[A-z0-9]+" minlength="1" maxlength="20" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Mật khẩu</label>
+                            <input type="password" name="MatKhau" class="form-control shadow-none" required>
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <button type="submit" class="btn btn-dark shadow-none">ĐĂNG NHẬP</button>
+                            <div>
+                                <a href="javascript:void(0)" data-toggle="modal" data-dismiss="modal" data-target="#forgotPasswordModal" class="text-secondary text-decoration-none">
+                                    Quên mật khẩu?
+                                </a>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <a href="javascript:void(0)" data-toggle="modal" data-dismiss="modal" data-target="#changePasswordModal" class="text-secondary text-decoration-none">
+                                Đổi mật khẩu
+                            </a><br>
+                            <a href="javascript:void(0)" data-toggle="modal" data-dismiss="modal" data-target="#registerModal" class="text-secondary text-decoration-none">
+                                Chưa có tài khoản? Đăng ký ngay!
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Đổi mật khẩu -->
+    <div class="modal fade" id="changePasswordModal" style="z-index: 1080;" data-backdrop="static" data-keyboard="false" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form onsubmit="return changePasswordCustomer()" id="changePasswordForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title d-flex align-items-center">
+                            <i class="bi bi-person-heart me-2"></i> Đổi mật khẩu
+                        </h5>
+                        <button type="reset" class="close shadow-none" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Tên đăng nhập</label>
+                            <input type="text" name="Id" class="form-control shadow-none" pattern="[A-z0-9]+" minlength="5" maxlength="20" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Mật khẩu cũ</label>
+                            <input type="password" name="OldMatKhau" class="form-control shadow-none" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Mật khẩu mới</label>
+                            <input type="password" name="NewMatKhau" class="form-control shadow-none" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Xác nhận mật khẩu mới</label>
+                            <input type="password" name="ConfirmNewMatKhau" class="form-control shadow-none" required>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-dark shadow-none">Đổi mật khẩu</button><br>
+                            <a href="javascript:void(0)" data-toggle="modal" data-dismiss="modal" data-target="#loginModal" class="text-secondary text-decoration-none">
+                                Đã có tài khoản? Đăng nhập ngay!
+                            </a><br>
+                            <a href="javascript:void(0)" data-toggle="modal" data-dismiss="modal" data-target="#registerModal" class="text-secondary text-decoration-none">
+                                Chưa có tài khoản? Đăng ký ngay!
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quên mật khẩu -->
+    <div class="modal fade" id="forgotPasswordModal" style="z-index: 1080;" data-backdrop="static" data-keyboard="false" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form onsubmit="return forgotPasswordCustomer()" id="forgotPasswordForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title d-flex align-items-center">
+                            <i class="bi bi-person-heart me-2"></i> Quên mật khẩu
+                        </h5>
+                        <button type="reset" class="close shadow-none" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Tên đăng nhập</label>
+                            <input type="text" name="Id" class="form-control shadow-none" minlength="5" maxlength="20" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="Email" class="form-control shadow-none" required>
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <button type="submit" class="btn btn-dark shadow-none">Gửi</button>
+                            <a href="javascript:void(0)" data-toggle="modal" data-dismiss="modal" data-target="#loginModal" class="text-secondary text-decoration-none">
+                                Đăng nhập ngay!
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container-fluid float-right">
+        <main role="main">
+            @RenderBody()
+            <!-- Messenger Chat Plugin Code -->
+            <div id="fb-root"></div>
+
+            <!-- Your Chat Plugin code -->
+            <div id="fb-customer-chat" class="fb-customerchat">
+            </div>
+            <script>
+                var chatbox = document.getElementById('fb-customer-chat');
+                chatbox.setAttribute("page_id", "144061495452736");
+                chatbox.setAttribute("attribution", "biz_inbox");
+            </script>
+
+            <!-- Your SDK code -->
+            <script>
+                window.fbAsyncInit = function () {
+                    FB.init({
+                        xfbml: true,
+                        version: 'v18.0'
+                    });
+                };
+
+                (function (d, s, id) {
+                    var js, fjs = d.getElementsByTagName(s)[0];
+                    if (d.getElementById(id)) return;
+                    js = d.createElement(s); js.id = id;
+                    js.src = 'https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js';
+                    fjs.parentNode.insertBefore(js, fjs);
+                }(document, 'script', 'facebook-jssdk'));
+            </script>
+        </main>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.11/signalr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://SoLuongToiDacdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" asp-append-version="true"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
+    <script src="~/css/assets/js/bootstrap.min.js" asp-append-version="true"></script>
+    <script src="~/css/assets/js/popper.min.js" asp-append-version="true"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js" asp-append-version="true"></script>
+    <script src="~/js/StateCode.js"></script>
+    <script src="~/js/HomeCode.js"></script>
+    <script src="~/css/assets/js/script.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

@@ -1,0 +1,35 @@
+﻿@model BookingRoomHotel.ViewModels.PhongViewModel
+@{
+    ViewData["Title"] = "SearchRoom";
+}
+<div class="row">
+    @foreach (var room in Model.DanhSachPhong)
+    {
+        <div class="col-sm col-md-6 col-lg-4">
+            <div class="room">
+                <a href="room.html" class="img d-flex justify-content-center align-items-center" style="background-image: url(/images/Admin/Rooms/@room.AnhPhong)">
+                    <div class="icon d-flex justify-content-center align-items-center">
+                        <i class="bi bi-search"></i>
+                    </div>
+                </a>
+                <div class="text p-3 text-center">
+                    <h3 class="mb-3"><a>Room Number: @room.SoPhong</a></h3>
+                    <p><span class="Gia mr-2">$@room.Gia.00</span> <span class="per">per night</span></p>
+                    <hr>
+                    <p class="pt-1">
+                        <a type="button" class="btn-custom" data-toggle="modal" data-target="#add_event1">Booking Now<span class="bi bi-arrow-right"></span></a>
+
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            @for (int i = 1; i <= Model.SoLuong; i++)
+            {
+                <li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="return pagination('/KhachHangs/Index/' + '@i')">@i</a></li>
+            }
+        </ul>
+    </nav>
+</div>

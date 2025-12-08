@@ -1,0 +1,563 @@
+﻿@model BookingRoomHotel.ViewModels.KhachHangViewModel
+
+<style>
+    * {
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .h-font {
+        font-family: 'Merienda', cursive;
+    }
+
+    .custom-bg {
+        background-color: #2ec1ac;
+    }
+
+
+        .custom-bg:hover {
+            background-color: #3d279e;
+        }
+</style>
+<body class="bg-light8">
+    <!--Carousel-->
+    <section class="home-slider owl-carousel">
+        <div class="slider-item" style="background-image:url(images/IMG_15372.png);">
+            <div class="overlay"></div>
+            <div class="container">
+                <div class="row no-gutters slider-text align-items-center justify-content-center">
+                    <div class="col-md-12 ftco-animate text-center">
+                        <div class="text mb-5 pb-3">
+                            <h1 class="mb-3">Chào mừng đến Kiot Hotel</h1>
+                            <h2 class="">Sang trọng - Hiện đại - Tiện nghi</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slider-item" style="background-image:url(images/IMG_55677.png);">
+            <div class="overlay"></div>
+            <div class="container">
+                <div class="row no-gutters slider-text align-items-center justify-content-center">
+                    <div class="col-md-12 ftco-animate text-center">
+                        <div class="text mb-5 pb-3">
+                            <h1 class="mb-3">Trải nghiệm xa hoa</h1>
+                            <h2>Tham gia cùng chúng tôi</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slider-item" style="background-image:url(images/IMG_40905.png);">
+            <div class="overlay"></div>
+            <div class="container">
+                <div class="row no-gutters slider-text align-items-center justify-content-center">
+                    <div class="col-md-12 ftco-animate text-center">
+                        <div class="text mb-5 pb-3">
+                            <h1 class="mb-3">Chúng tôi luôn trân trọng cảm nhận của bạn</h1>
+                            <h2>Tham gia cùng chúng tôi</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slider-item" style="background-image:url(images/IMG_62045.png);">
+            <div class="overlay"></div>
+            <div class="container">
+                <div class="row no-gutters slider-text align-items-center justify-content-center">
+                    <div class="col-md-12 ftco-animate text-center">
+                        <div class="text mb-5 pb-3">
+                            <h1 class="mb-3">Xin cảm ơn vì đã đặt phòng</h1>
+                            <h2>Tham gia cùng chúng tôi</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Kiểm tra phòng trống -->
+    <section class="ftco-booking">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <form asp-action="Index" asp-controller="Home" onsubmit="saveSearchInfo()" class="booking-form" id="formSearch">
+                        <div class="row justify-content-between">
+                            <div class="col-md-2 d-flex">
+                                <div class="form-group p-4 align-self-stretch d-flex align-items-center">
+                                    <div class="wrap">
+                                        <label for="#">Ngày nhận phòng</label>
+                                        <div class="select-wrap">
+                                            <input asp-for="TimKiemPhong.NgayNhanPhong" name="CheckInDate" type="text" class="form-control checkin_date">
+                                            <div class="icon"><span class="bi bi-caret-down"></span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 d-flex">
+                                <div class="form-group p-4 align-self-stretch d-flex align-items-center">
+                                    <div class="wrap">
+                                        <label for="#">Ngày trả phòng</label>
+                                        <div class="select-wrap">
+                                            <input asp-for="TimKiemPhong.NgayTraPhong" name="CheckOutDate" type="text" class="form-control checkout_date" placeholder="">
+                                            <div class="icon"><span class="bi bi-caret-down"></span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 d-flex">
+                                <div class="form-group p-4 align-self-stretch d-flex align-items-center">
+                                    <div class="wrap">
+                                        <label for="#">Loại phòng</label>
+                                        <div class="form-field">
+                                            <div class="select-wrap">
+                                                <div class="icon"><span class="bi bi-caret-down"></span></div>
+                                                <select asp-for="TimKiemPhong.LoaiPhong" name="LoaiPhong" id="" class="form-control">
+                                                    <span class="bi bi-caret-down"></span>
+                                                    <option value="" style="display:none;"></option>
+                                                    <option value="1">Phòng Suite</option>
+                                                    <option value="2">Phòng Classic</option>
+                                                    <option value="3">Phòng Gia đình</option>
+                                                    <option value="4">Phòng Deluxe</option>
+                                                    <option value="5">Phòng Superior</option>
+                                                    <option value="6">Phòng Luxury</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 d-flex">
+                                <div class="form-group p-4 align-self-stretch d-flex align-items-center">
+                                    <div class="wrap">
+                                        <label for="#">Diện tích</label>
+                                        <div class="form-field">
+                                            <div class="select-wrap">
+                                                <span> > </span><output id="outArea">30</output><span> m<sup>2</sup></span>
+                                                <input asp-for="TimKiemPhong.NgayNhanPhong" name="Area" type="range" value="30" min="30" step="5" SoLuongToiDa="100" oninput="document.getElementById('outArea').value = this.value">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 d-flex">
+                                <div class="form-group p-4 align-self-stretch d-flex align-items-center">
+                                    <div class="wrap">
+                                        <label for="#">Giá</label>
+                                        <div class="form-field">
+                                            <div class="select-wrap">
+                                                <span> > </span><output id="outGia">100</output><span> $</span>
+                                                <input asp-for="TimKiemPhong.NgayNhanPhong" name="Gia" type="range" value="100" min="100" step="100" SoLuongToiDa="5000" oninput="document.getElementById('outGia').value = this.value">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md d-flex">
+                                <div class="form-group d-flex align-self-stretch">
+                                    <input type="submit" class="btn btn-primary py-3 px-4 align-self-stretch" value="Tìm phòng">
+                                </div>
+                            </div>
+                        </div>
+                        <span id="SearchError" class="text-danger"></span>
+                    </form>
+                </div>
+                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </section>
+    <div class="container">
+        <section class="ftco-section bg-light">
+            <div class="container">
+                <div class="row justify-content-center mb-5 pb-3">
+                    <div class="col-md-7 heading-section text-center ftco-animate">
+                        <h2 class="mt-5 pt-4 mb-4 text-center fw-bold h-font">PHÒNG CỦA CHÚNG TÔI</h2>
+                    </div>
+                </div>
+
+                <div class="row">
+                    @foreach (var room in Model.TrangChu.PhongNgauNhien)
+                    {
+                        <div class="col-sm col-md-6 col-lg-4 ftco-animate">
+                            <div class="room">
+                                <a href="room.html" class="img d-flex justify-content-center align-items-center" style="background-image: url(images/Admin/Rooms/@room.AnhPhong)">
+                                    <div class="icon d-flex justify-content-center align-items-center">
+                                        <i class="bi bi-search"></i>
+                                    </div>
+                                </a>
+                                <div class="text p-3 text-center">
+                                    <h3 class="mb-3"><a>Số phòng: @room.SoPhong</a></h3>
+                                    <p><span class="Gia mr-2">$@room.Gia.00</span> <span class="per">/ đêm</span></p>
+                                    <hr>
+                                    <p class="pt-1">
+                                        <a type="button" class="btn-custom" data-toggle="modal" data-target="#add_event1" onclick="setFormBooking(@room.MaPhong, @room.Gia)">Đặt phòng ngay <span class="bi bi-arrow-right"></span></a>
+
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Tiện ích -->
+    <div class="row no-gutters justify-content-center">
+        <div class="col-md-7 text-center heading-section ftco-animate">
+            <h2 class="mt-5 pt-4 mb-4 text-center fw-bold h-font">TIỆN ÍCH</h2>
+        </div>
+    </div>
+
+    <!---->
+    <section class="ftco-section">
+        <div class="container">
+            <div class="row d-flex">
+                <div class="col-md-3 d-flex align-self-stretch ftco-animate">
+                    <div class="media block-6 services py-4 d-block text-center">
+                        <div class="d-flex justify-content-center">
+                            <div class="icon d-flex align-items-center justify-content-center">
+                                <span class="flaticon-reception-bell"></span>
+                            </div>
+                        </div>
+                        <div class="media-body p-2 mt-2">
+                            <h3 class="heading mb-3">Lễ tân 24/7</h3>
+                            <p>Luôn sẵn sàng phục vụ mọi lúc.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 d-flex align-self-stretch ftco-animate">
+                    <div class="media block-6 services py-4 d-block text-center">
+                        <div class="d-flex justify-content-center">
+                            <div class="icon d-flex align-items-center justify-content-center">
+                                <span class="flaticon-serving-dish"></span>
+                            </div>
+                        </div>
+                        <div class="media-body p-2 mt-2">
+                            <h3 class="heading mb-3">Nhà hàng & Quầy bar</h3>
+                            <p>Món ăn thơm ngon, phục vụ tận tâm!</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 d-flex align-self-stretch ftco-animate">
+                    <div class="media block-6 services py-4 d-block text-center">
+                        <div class="d-flex justify-content-center">
+                            <div class="icon d-flex align-items-center justify-content-center">
+                                <span class="flaticon-car"></span>
+                            </div>
+                        </div>
+                        <div class="media-body p-2 mt-2">
+                            <h3 class="heading mb-3">Dịch vụ đưa đón</h3>
+                            <p>Dịch vụ đưa đón tiện lợi và an toàn.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 d-flex align-self-stretch ftco-animate">
+                    <div class="media block-6 services py-4 d-block text-center">
+                        <div class="d-flex justify-content-center">
+                            <div class="icon d-flex align-items-center justify-content-center">
+                                <span class="flaticon-spa"></span>
+                            </div>
+                        </div>
+                        <div class="media-body p-2 mt-2">
+                            <h3 class="heading mb-3">Dịch vụ Spa</h3>
+                            <p>Thư giãn và chăm sóc tinh thần.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!---->
+    <!-- Phản hồi -->
+    <div class="row no-gutters justify-content-center pb-5">
+        <div class="col-md-7 text-center heading-section ftco-animate">
+            <h2 class="mt-5 pt-4 mb-4 text-center fw-bold h-font">PHẢN HỒI</h2>
+        </div>
+    </div>
+    <div class="container">
+        <div class="swiper swiper_fb">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide bg-white p-4">
+                    <div class="profile d-flex align-items-center p-3 mb-1">
+                        <img src="images/features/KhachHangs.svg" width="30px">
+                        <h6 class="m-0 ms-2">Thái Dương</h6>
+                    </div>
+                    <p>
+                        Ok bạn ơi
+                        cảm ơn rất nhiều
+                        Tôi rất hài lòng
+                    </p>
+                    <div class="rating">
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                    </div>
+                </div>
+
+                <div class="swiper-slide bg-white p-4">
+                    <div class="profile d-flex align-items-center p-4">
+                        <img src="images/features/KhachHangs.svg" width="30px">
+                        <h6 class="m-0 ms-2">Vợ của Thái Dương</h6>
+                    </div>
+                    <p>
+                        Dịch vụ rất tốt
+                        Không gian thoải mái
+                        Rất muốn quay lại
+                    </p>
+                    <div class="rating">
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                    </div>
+                </div>
+
+                <div class="swiper-slide bg-white p-4">
+                    <div class="profile d-flex align-items-center p-4">
+                        <img src="images/features/KhachHangs.svg" width="30px">
+                        <h6 class="m-0 ms-2">Người dùng khác</h6>
+                    </div>
+                    <p>
+                        Phòng sạch, nhân viên thân thiện
+                        Bữa sáng phong phú
+                        Tôi sẽ giới thiệu cho bạn bè
+                    </p>
+                    <div class="rating">
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
+    <!-- Liên hệ -->
+    <div class="row no-gutters justify-content-center pb-5">
+        <div class="col-md-7 text-center heading-section ftco-animate">
+            <h2 class="mt-5 pt-4 mb-4 text-center fw-bold h-font">LIÊN HỆ</h2>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-4">
+                <div class="bg-light rounded p-4 mb-4">
+                    <h5>Gọi cho chúng tôi: </h5>
+                    <a href="" class="d-inline-block mb-2 text-decoration-none text-dark">
+                        <i class="bi bi-telephone-forward-fill"></i>  +1900 1093
+                    </a>
+                </div>
+
+                <div class="bg-light rounded p-4 mb-4">
+                    <h5>Theo dõi chúng tôi trên:</h5>
+                    <a href="" class="d-inline-block mb-3">
+                        <span class="badge bg-light text-dark fs-6 p-2">
+                            <i class="bi bi-facebook"></i> Facebook
+                        </span>
+                    </a>
+                    <br>
+                    <a href="" class="d-inline-block mb-3">
+                        <span class="badge bg-light text-dark fs-6 p-2">
+                            <i class="bi bi-instagram"></i> Instagram
+                        </span>
+                    </a>
+                    <br>
+                    <a href="" class="d-inline-block mb-3">
+                        <span class="badge bg-light text-dark fs-6 p-2">
+                            <i class="bi bi-envelope"></i> Gmail
+                        </span>
+                    </a>
+                    <br>
+                    <a href="" class="d-inline-block mb-3">
+                        <span class="badge bg-light text-dark fs-6 p-2">
+                            <i class="bi bi-twitter"></i> Twitter
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instagram -->
+    <section class="instagram">
+        <div class="container-fluid">
+            <div class="row no-gutters justify-content-center pb-5">
+                <div class="col-md-7 text-center heading-section ftco-animate">
+                    <h2 class="mt-5 pt-4 mb-4 text-center fw-bold h-font">INSTAGRAM</h2>
+                </div>
+            </div>
+            <div class="row no-gutters">
+                <div class="col-sm-12 col-md ftco-animate">
+                    <a href="~/images/insta-1.jpg" class="insta-img image-popup" style="background-image: url(images/insta-1.jpg);">
+                        <div class="icon d-flex justify-content-center">
+                            <span class="align-self-center bi bi-instagram"></span>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-sm-12 col-md ftco-animate">
+                    <a href="~/images/insta-2.jpg" class="insta-img image-popup" style="background-image: url(images/insta-2.jpg);">
+                        <div class="icon d-flex justify-content-center">
+                            <span class="align-self-center bi bi-instagram"></span>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-sm-12 col-md ftco-animate">
+                    <a href="~/images/insta-3.jpg" class="insta-img image-popup" style="background-image: url(images/insta-3.jpg);">
+                        <div class="icon d-flex justify-content-center">
+                            <span class="align-self-center bi bi-instagram"></span>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-sm-12 col-md ftco-animate">
+                    <a href="~/images/insta-4.jpg" class="insta-img image-popup" style="background-image: url(images/insta-4.jpg);">
+                        <div class="icon d-flex justify-content-center">
+                            <span class="align-self-center bi bi-instagram"></span>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-sm-12 col-md ftco-animate">
+                    <a href="~/images/insta-5.jpg" class="insta-img image-popup" style="background-image: url(images/insta-5.jpg);">
+                        <div class="icon d-flex justify-content-center">
+                            <span class="align-self-center bi bi-instagram"></span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <div class="container-fluid bg-white mt-5">
+        <div class="row">
+            <div class="col-lg-4 mt-4">
+                <h3 class="h-font fw-bold fs-3 mb-2">KIOT HOTEL</h3>
+                <p>
+                    Kiot Hotel được thành lập vào tháng 9 năm 2023, với đội ngũ lãnh đạo từ King Of Loser.
+                    Với mục tiêu luôn làm Khách Hàng hài lòng và xây dựng niềm tin là ưu tiên hàng đầu, chúng tôi cam kết mang đến cho bạn dịch vụ và trải nghiệm tốt nhất tại đây.
+                </p>
+            </div>
+
+            <div class="col-lg-4 mt-4">
+                <h5 class="mb-3">Liên kết</h5>
+                <a href="index.html" class="d-inline-block mb-2 text-dark text-decoration-none"> Trang chủ </a> <br>
+                <a href="room.html" class="d-inline-block mb-2 text-dark text-decoration-none"> Phòng </a> <br>
+                <a href="facilities.html" class="d-inline-block mb-2 text-dark text-decoration-none"> Tiện ích </a> <br>
+                <a href="contact.html" class="d-inline-block mb-2 text-dark text-decoration-none"> Liên hệ </a> <br>
+                <a href="about.html" class="d-inline-block mb-2 text-dark text-decoration-none"> Giới thiệu </a>
+            </div>
+
+            <div class="col-lg-4 mt-4">
+                <h5 class="mb-3">Theo dõi chúng tôi</h5>
+                <a href="" class="d-inline-block text-dark text-decoration-none mb-2"> <i class="bi bi-envelope"></i> Gmail</a><br>
+                <a href="" class="d-inline-block text-dark text-decoration-none mb-2"> <i class="bi bi-facebook"></i> Facebook</a><br>
+                <a href="" class="d-inline-block text-dark text-decoration-none mb-2"> <i class="bi bi-twitter"></i> Twitter</a><br>
+                <a href="" class="d-inline-block text-dark text-decoration-none mb-2"> <i class="bi bi-instagram"></i> Instagram</a><br>
+            </div>
+        </div>
+    </div>
+    <h6 class="text-center bg-dark text-white p-3 m-0">TỪ NĂM 2025</h6>
+
+    <div id="add_event1" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Thêm đặt phòng mới</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Đóng"> <span aria-hidden="true">&times;</span> </button>
+                </div>
+                <div class="modal-body">
+                    <form onsubmit="return BookingRoom()" id="formBooking">
+                        <input type="hidden" id="BookingRoomID" name="RoomID" />
+                        <span id="RoomID" class="text-danger"></span>
+                        <input type="hidden" id="IdCus" name="CustomerId" />
+                        <span id="CustomerId" class="text-danger"></span>
+                        <div class="row">
+                            <div class="form-group col-lg-12">
+                                <label>Ngày nhận phòng <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input name="CheckInDate" class="form-control checkin_date" type="text">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-calendar"></i>
+                                    </span>
+                                </div>
+                                <span id="CheckInDate" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group col-lg-12">
+                                <label>Ngày trả phòng <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input name="TenDangNhap" class="form-control checkout_date" type="text">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-calendar"></i>
+                                    </span>
+                                </div>
+                                <span id="TenDangNhap" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Dịch vụ <span class="text-danger">*</span></label>
+                            <input class="form-control" type="text">
+                        </div>
+
+                        <div class="d-flex form-group">
+                            <label>Tổng giá: <span class="text-danger"></span></label>
+                            <p><h5 class="Gia" id="BookingGia"></h5></p>
+                        </div>
+                        <span id="CustomerId" class="text-danger"></span>
+                        <div class="submit-section">
+                            <button type="submit" class="btn btn-primary submit-btn">Thanh toán</button>
+                        </div>
+
+                        <span id="BookingError" class="text-danger"></span>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="~/js/jquery.min.js"></script>
+<script src="~/js/jquery-migrate-3.0.1.min.js"></script>
+<script src="~/js/popper.min.js"></script>
+<script src="~/js/jquery.easing.1.3.js"></script>
+<script src="~/js/jquery.waypoints.min.js"></script>
+<script src="~/js/jquery.stellar.min.js"></script>
+<script src="~/js/owl.carousel.min.js"></script>
+<script src="~/js/jquery.magnific-popup.min.js"></script>
+<script src="~/js/aos.js"></script>
+<script src="~/js/jquery.animateNumber.min.js"></script>
+<script src="~/js/bootstrap-datepicker.js"></script>
+<script src="~/js/scrollax.min.js"></script>
+<script src="~/js/main.js"></script>
+<script>
+    $("#kt_daterangepicker_1").daterangepicker();
+    document.addEventListener("DOMContentLoaded", function () {
+        var swiper = new Swiper(".swiper_fb", {
+            effect: "coverflow",
+            grabCursor: true,
+            centeredSlides: true,
+            slidesPerView: "auto",
+
+            coverflowEffect: {
+                rotate: 50,
+                stretch: 0,
+                depth: 100,
+                modifier: 1,
+                slideShadows: false,
+            },
+            pagination: {
+                el: ".swiper-pagination",
+            }
+        });
+    });
+</script>

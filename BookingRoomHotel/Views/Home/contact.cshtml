@@ -1,0 +1,362 @@
+﻿@* @model BookingRoomHotel.Models.CauHoi
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiot Hotel | Contact with us</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merienda:wght@400;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://unpkg.com/swiper@7.0.8/swiper-bundle.min.css" />
+    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,400i,700,700i" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/animate.css">
+    <link rel="stylesheet" href="~/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="~/css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="~/css/magnific-popup.css">
+    <link rel="stylesheet" href="~/css/aos.css">
+    <link rel="stylesheet" href="~/css/ionicons.min.css">
+    <link rel="stylesheet" href="~/css/bootstrap-datepicker.css">
+    <link rel="stylesheet" href="~/css/jquery.timepicker.css">
+    <link rel="stylesheet" href="~/css/flaticon.css">
+    <link rel="stylesheet" href="~/css/icomoon.css">
+    <link rel="stylesheet" href="~/css/style.css">
+
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .h-font {
+            font-family: 'Merienda', cursive;
+        }
+        
+        .custom-bg {
+            background-color: #2ec1ac;
+        }
+
+        .custom-bg:hover {
+            background-color: #3d279e;
+        }
+
+        .avai-form {
+            margin-top: -50px;
+            z-index: 2;
+            position: relative;
+        }
+
+        @@media screen and (SoLuongToiDa-width: 575px) {
+            .avai-form {
+                margin-top: 0px;
+                padding: 0 35px;
+            }           
+        }       
+    </style>
+</head>
+
+<body class="bg-light">
+
+    <div class="my-5 px-4">
+        <h2 class="fw-bold h-font text-center">CONTACT US</h2>
+        <div class="h-line bg-dark"></div>
+        <p class="text-center mt-3">
+            With a team of professional staff, please contact us, we will respond to all your requests
+        </p>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-md-6 mb-5 px-4">
+                <div class="bg-white rounded shadow p-4">
+                    <iframe class="w-100 rounded mb-4" height="300px" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3874.5847248662644!2d109.21657047421918!3d13.803889596087158!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x316f6bf778c80973%3A0x8a7d0b5aa0af29c7!2sFPT%20University%20Quy%20Nhon%20AI%20Campus!5e0!3m2!1sen!2s!4v1695803634294!5m2!1sen!2s" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    <h5>DiaChi</h5>
+                    <i class="bi bi-geo-alt"></i><a href="https://maps.app.goo.gl/JKMrr2xmQp8Xnfae7" target="_blank" class="d-inline-block text-decoration-none text-dark">
+                        Nhon Binh District - Quy Nhon - Binh Dinh - VietNam </a>
+                        <h5>Call us: </h5>
+                        <a href="" class="d-inline-block mb-2 text-decoration-none text-dark">
+                            <i class="bi bi-teleSoDienThoai-forward-fill"></i>  +84964641839
+                        </a>
+                        <h5 class="mt-4"><i class="bi bi-envelope"></i> Email</h5>
+                    <a href="mailto: kiot.pj2023@gmail.com" class="d-inline-block text-decoration-none text-dark">kiot.pj2023@gmail.com</a>
+
+                        <h5 class="mt-4">Follow us</h5>
+                            <a href="" class="d-inline-block mb-3">
+                                <span class="badge bg-light text-dark fs-6 p-2">
+                                    <i class="bi bi-facebook"></i>
+                                </span>
+                            </a>
+                            <a href="" class="d-inline-block mb-3">
+                                <span class="badge bg-light text-dark fs-6 p-2">
+                                    <i class="bi bi-instagram"></i> 
+                                </span>
+                            </a>
+                            <a href="" class="d-inline-block mb-3">
+                                <span class="badge bg-light text-dark fs-6 p-2">
+                                    <i class="bi bi-twitter"></i> 
+                                </span>
+                            </a>
+                              
+                </div>
+
+            </div>
+
+            <div class="col-lg-6 col-md-6 mb-5 px-4">
+                <div class="bg-white rounded shadow p-4">
+                    <form id="formQuestion" onsubmit="return sendQuestion()">
+                        <h5>Send a messaage</h5>
+                        <div class="mb-3">
+                            <label class="form-label" style="font-weight: 500;">Name</label>
+                            <input name="Name" type="text" class="form-control shadow-none">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" style="font-weight: 500;">Email</label>
+                            <input name="Email" type="email" class="form-control shadow-none">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" style="font-weight: 500;">Subject</label>
+                            <input name="Subject" type="text" class="form-control shadow-none">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" style="font-weight: 500;">Message</label>
+                            <textarea name="Message" class="form-control shadow-none" rows="6" style="resize: none;"></textarea>                  
+                        </div>
+                        <button type="submit" class="btn text-white custom-bg mt-3">SEND</button>
+                        
+                    </form>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="container-fluid bg-white mt-5">
+        <div class="row">
+            <div class="col-lg-4 mt-4">
+                <h3 class="h-font fw-bold fs-3 mb-2">KIOT HOTEL</h3>
+                <p>
+                    Kiot Hotel was established in September 2023, with CEOs in King Of Loser team.
+                    With the goal of always making KhachHangs happy and building trust in the first place, we will always bring you services, providing excellent experience in this place.
+                </p>
+            </div>
+
+            <div class="col-lg-4 mt-4">
+                <h5 class="mb-3">Links</h5>
+                <a href="" class="d-inline-block mb-2 text-dark text-decoration-none"> Home </a> <br>
+                <a href="" class="d-inline-block mb-2 text-dark text-decoration-none"> Rooms </a> <br>
+                <a href="" class="d-inline-block mb-2 text-dark text-decoration-none"> Facilities </a> <br>
+                <a href="" class="d-inline-block mb-2 text-dark text-decoration-none"> Contact us </a> <br>
+                <a href="" class="d-inline-block mb-2 text-dark text-decoration-none"> About </a>
+            </div>
+
+            <div class="col-lg-4 mt-4">
+                <h5 class="mb-3">Follow us</h5>
+                <a href="" class="d-inline-block text-dark text-decoration-none mb-2"> <i class="bi bi-envelope"></i> Gmail</a><br>
+                <a href="" class="d-inline-block text-dark text-decoration-none mb-2"> <i class="bi bi-facebook"></i> Facebook</a><br>
+                <a href="" class="d-inline-block text-dark text-decoration-none mb-2"> <i class="bi bi-twitter"></i> Twitter</a><br>
+                <a href="" class="d-inline-block text-dark text-decoration-none mb-2"> <i class="bi bi-instagram"></i> Instagram</a><br>
+            </div>
+        </div>
+    </div>
+    <h6 class="text-center bg-dark text-white p-3 m-0">SINCE 2025</h6>
+
+
+
+    <!-- JavaScript Libraries -->
+    <!-- loader -->
+    <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee" /><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00" /></svg></div>
+
+
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/jquery-migrate-3.0.1.min.js"></script>
+    <script src="~/js/popper.min.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+    <script src="~/js/jquery.easing.1.3.js"></script>
+    <script src="~/js/jquery.waypoints.min.js"></script>
+    <script src="~/js/jquery.stellar.min.js"></script>
+    <script src="~/js/owl.carousel.min.js"></script>
+    <script src="~/js/jquery.magnific-popup.min.js"></script>
+    <script src="~/js/aos.js"></script>
+    <script src="~/js/jquery.animateNumber.min.js"></script>
+    <script src="~/js/bootstrap-datepicker.js"></script>
+    <script src="~/js/scrollax.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+    <script src="~/js/google-map.js"></script>
+    <script src="~/js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="~/js/ContactCode.js"></script>
+</body>
+</html> *@
+
+@model BookingRoomHotel.Models.CauHoi
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiot Hotel | Liên hệ</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Merienda:wght@400;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper@7.0.8/swiper-bundle.min.css" />
+
+    <!-- Local CSS -->
+    <link rel="stylesheet" href="~/css/animate.css">
+    <link rel="stylesheet" href="~/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="~/css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="~/css/magnific-popup.css">
+    <link rel="stylesheet" href="~/css/aos.css">
+    <link rel="stylesheet" href="~/css/ionicons.min.css">
+    <link rel="stylesheet" href="~/css/bootstrap-datepicker.css">
+    <link rel="stylesheet" href="~/css/jquery.timepicker.css">
+    <link rel="stylesheet" href="~/css/flaticon.css">
+    <link rel="stylesheet" href="~/css/icomoon.css">
+    <link rel="stylesheet" href="~/css/style.css">
+
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .h-font {
+            font-family: 'Merienda', cursive;
+        }
+
+        .custom-bg {
+            background-color: #2ec1ac;
+        }
+
+            .custom-bg:hover {
+                background-color: #3d279e;
+            }
+
+        .avai-form {
+            margin-top: -50px;
+            z-index: 2;
+            position: relative;
+        }
+
+        media screen and (max-width: 575px) {
+            .avai-form {
+                margin-top: 0px;
+                padding: 0 35px;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+
+    <!-- Header -->
+    <div class="my-5 px-4 text-center">
+        <h2 class="fw-bold h-font">CONTACT US</h2>
+        <div class="h-line bg-dark mx-auto" style="width:100px; height:3px;"></div>
+        <p class="mt-3">With a team of professional staff, please contact us. We will respond to all your requests.</p>
+    </div>
+
+    <!-- Contact Section -->
+    <div class="container">
+        <div class="row">
+
+            <!-- Info -->
+            <div class="col-lg-6 mb-5 px-4">
+                <div class="bg-white rounded shadow p-4">
+                    <h5>Call us:</h5>
+                    <p><i class="bi bi-telephone-fill"></i> 1900 3432</p>
+
+                    <h5>Email</h5>
+                    <p><i class="bi bi-envelope"></i> <a href="mailto:kiot.pj2023@gmail.com">kiot.pj2023@gmail.com</a></p>
+
+                    <h5>Follow us</h5>
+                    <a href="#"><i class="bi bi-facebook fs-4 me-2"></i></a>
+                    <a href="#"><i class="bi bi-instagram fs-4 me-2"></i></a>
+                    <a href="#"><i class="bi bi-twitter fs-4"></i></a>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <div class="col-lg-6 mb-5 px-4">
+                <div class="bg-white rounded shadow p-4">
+                    <form id="formQuestion" onsubmit="return sendQuestion()">
+                        <h5>Send a message</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <input name="Name" type="text" class="form-control shadow-none" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input name="Email" type="email" class="form-control shadow-none" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Subject</label>
+                            <input name="Subject" type="text" class="form-control shadow-none" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Message</label>
+                            <textarea name="Message" class="form-control shadow-none" rows="6" style="resize:none;" required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn text-white custom-bg mt-3">SEND</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="container-fluid bg-white mt-5">
+        <div class="row p-4">
+            <div class="col-lg-4">
+                <h3 class="h-font fw-bold fs-3 mb-2">KIOT HOTEL</h3>
+                <p>Established in September 2023 by KING OF LOSER team. Always bring excellent experience and customer satisfaction first.</p>
+            </div>
+
+            <div class="col-lg-4">
+                <h5 class="mb-3">Links</h5>
+                <a href="#" class="d-block mb-2 text-dark text-decoration-none">Home</a>
+                <a href="#" class="d-block mb-2 text-dark text-decoration-none">Rooms</a>
+                <a href="#" class="d-block mb-2 text-dark text-decoration-none">Facilities</a>
+                <a href="#" class="d-block mb-2 text-dark text-decoration-none">Contact us</a>
+                <a href="#" class="d-block mb-2 text-dark text-decoration-none">About</a>
+            </div>
+
+            <div class="col-lg-4">
+                <h5 class="mb-3">Follow us</h5>
+                <a href="#" class="d-block mb-2 text-dark text-decoration-none"><i class="bi bi-envelope"></i> Gmail</a>
+                <a href="#" class="d-block mb-2 text-dark text-decoration-none"><i class="bi bi-facebook"></i> Facebook</a>
+                <a href="#" class="d-block mb-2 text-dark text-decoration-none"><i class="bi bi-twitter"></i> Twitter</a>
+                <a href="#" class="d-block mb-2 text-dark text-decoration-none"><i class="bi bi-instagram"></i> Instagram</a>
+            </div>
+        </div>
+    </div>
+    <h6 class="text-center bg-dark text-white p-3 m-0">SINCE 2025</h6>
+
+    <!-- JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/owl.carousel.min.js"></script>
+    <script src="~/js/aos.js"></script>
+    <script src="~/js/bootstrap-datepicker.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&callback=initMap" async defer></script>
+    <script src="~/js/google-map.js"></script>
+    <script src="~/js/main.js"></script>
+    <script src="~/js/ContactCode.js"></script>
+</body>
+</html>
