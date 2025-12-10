@@ -17,6 +17,10 @@ namespace HotelManagement.DataAccess
 
         IEnumerable<Phong> getPhongByLoaiPhong(string id);
 
+        Phong getChiTietPhong(string id);
+
+        void AddReview(ReviewPhong model);
+
         void removeLoaiPhong(string id);
 
         void themLoaiPhong(LoaiPhong newloaiphong);

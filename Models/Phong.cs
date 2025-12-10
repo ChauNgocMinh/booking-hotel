@@ -19,5 +19,6 @@ namespace HotelManagement.Models
         public virtual LoaiPhong MaLoaiPhongNavigation { get; set; } = null!;
         public virtual TrangThaiPhong MaTrangThaiNavigation { get; set; } = null!;
         public virtual ICollection<OrderPhong> OrderPhongs { get; set; }
+        public virtual ICollection<ReviewPhong> ReviewPhongs { get; set; }
     }
 }

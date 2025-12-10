@@ -84,6 +84,24 @@ namespace HotelManagement.DataAccess
             return s4;
         }
 
+        public void AddReview(ReviewPhong model)
+        {
+            model.CreatedAt = DateTime.Now;
+
+            context.ReviewPhongs.Add(model);
+            context.SaveChanges();
+        }
+
+        public Phong getChiTietPhong(string id)
+        {
+            return context.Phongs
+                   .Include(x => x.ReviewPhongs)
+                       .ThenInclude(r => r.Person)
+                   .Include(x => x.MaLoaiPhongNavigation)
+                   .Include(x => x.MaTrangThaiNavigation)
+                   .FirstOrDefault(p => p.MaPhong == id);
+        }
+
         public void removeLoaiPhong(string id)
         {
             //khi xóa loaiphong thì tất cả các phòng thuộc loại phòng đó đều bị xóa

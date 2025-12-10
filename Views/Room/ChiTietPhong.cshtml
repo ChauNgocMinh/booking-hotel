@@ -1,0 +1,76 @@
+﻿@model Phong
+@inject IHttpContextAccessor accessor
+
+<div class="container mt-4">
+
+    <div class="row">
+        <!-- Ảnh phòng -->
+        <div class="col-md-5">
+            <img src="~/pictures/@(
+                Model.MaLoaiPhongNavigation.MaLoaiPhong == "MLP1" ? "phongdon.png" :
+                Model.MaLoaiPhongNavigation.MaLoaiPhong == "MLP2" ? "phongdoi.png" :
+                Model.MaLoaiPhongNavigation.MaLoaiPhong == "MLP3" ? "phonggiadinh.jpg" :
+                "phongvip.jpg"
+            )" 
+            class="img-fluid rounded shadow" />
+        </div>
+
+        <!-- Thông tin phòng -->
+        <div class="col-md-7">
+            <h2>@Model.TenPhong</h2>
+            <p class="text-muted">@Model.MaLoaiPhongNavigation.TenLoaiPhong</p>
+
+            <h4 class="text-danger fw-bold">Giá: @String.Format("{0:N0}", Model.MaLoaiPhongNavigation.GiaPhong) VND</h4>
+
+            <p class="mt-3">@Model.MoTaPhong</p>
+
+            <p><strong>Trạng thái:</strong> @Model.MaTrangThaiNavigation.TenTrangThai</p>
+
+            <a asp-controller="Room" asp-action="Index" class="btn btn-secondary mt-3">Quay lại</a>
+        </div>
+    </div>
+
+    <hr class="my-4" />
+
+    <h3>Đánh giá phòng</h3>
+
+    <form method="post" asp-controller="Room" asp-action="AddReview" class="mb-4">
+
+        <input type="hidden" name="MaPhong" value="@Model.MaPhong" />
+
+        <label class="form-label">Chấm điểm</label>
+        <select name="Rating" class="form-select w-25 mb-3">
+            <option value="5">5 ⭐ Tuyệt vời</option>
+            <option value="4">4 ⭐ Tốt</option>
+            <option value="3">3 ⭐ Bình thường</option>
+            <option value="2">2 ⭐ Tệ</option>
+            <option value="1">1 ⭐ Rất tệ</option>
+        </select>
+
+        <label class="form-label">Nhận xét</label>
+        <textarea name="Comment" class="form-control mb-3" rows="3" placeholder="Nhập đánh giá của bạn"></textarea>
+
+        <button class="btn btn-primary">Gửi đánh giá</button>
+    </form>
+    <hr />
+
+    <!-- DANH SÁCH REVIEW -->
+    <h4 class="mt-4">Các đánh giá gần đây</h4>
+
+    @if (Model.ReviewPhongs != null && Model.ReviewPhongs.Count > 0)
+    {
+        foreach (var rv in Model.ReviewPhongs.OrderByDescending(x => x.CreatedAt))
+        {
+            <div class="border rounded p-3 mb-3 shadow-sm bg-light">
+                <strong>@rv.Person.HoTen</strong> 
+                <p class="mb-1">@rv.Comment</p>
+                <small class="text-muted">@rv.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+            </div>
+        }
+    }
+    else
+    {
+        <p class="text-muted">Phòng chưa có đánh giá nào.</p>
+    }
+
+</div>

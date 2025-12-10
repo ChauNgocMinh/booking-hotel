@@ -30,6 +30,7 @@ namespace HotelManagement.Models
         public virtual DbSet<TaiKhoan> TaiKhoans { get; set; } = null!;
         public virtual DbSet<TrangThaiPhong> TrangThaiPhongs { get; set; } = null!;
         public virtual DbSet<VaiTro> VaiTros { get; set; } = null!;
+        public virtual DbSet<ReviewPhong> ReviewPhongs { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -89,7 +90,7 @@ namespace HotelManagement.Models
             });
 
 
-           
+
 
             modelBuilder.Entity<LoaiPhong>(entity =>
             {
@@ -250,6 +251,32 @@ namespace HotelManagement.Models
                     .HasForeignKey(d => d.MaTrangThai)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FKPhong128242");
+
+                entity.HasMany(p => p.ReviewPhongs)
+                  .WithOne(r => r.Phong)
+                  .HasForeignKey(r => r.MaPhong);
+            });
+
+            modelBuilder.Entity<ReviewPhong>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.ToTable("ReviewPhong");
+
+                entity.Property(e => e.Comment).HasMaxLength(500);
+
+                entity.Property(e => e.PersonId).HasMaxLength(255);
+                entity.Property(e => e.MaPhong).HasMaxLength(255);
+
+                entity.HasOne(e => e.Phong)
+                      .WithMany(p => p.ReviewPhongs)
+                      .HasForeignKey(e => e.MaPhong)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.Person)
+                      .WithMany()
+                      .HasForeignKey(e => e.PersonId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<TaiKhoan>(entity =>

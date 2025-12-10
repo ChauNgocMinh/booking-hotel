@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using HotelManagement.Models.Authentication;
-using HotelManagement.DataAccess;
+﻿using HotelManagement.DataAccess;
 using HotelManagement.Models;
+using HotelManagement.Models.Authentication;
+using HotelManagement.ModelsView;
+using HotelManagement.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace HotelManagement.Controllers
@@ -11,10 +13,13 @@ namespace HotelManagement.Controllers
     {
         private IRepository repo;
         IHttpContextAccessor accessor;
-        public RoomController(IRepository repo, IHttpContextAccessor accessor)
+        private readonly IVnPayService _vnPayservice;
+
+        public RoomController(IRepository repo, IHttpContextAccessor accessor, IVnPayService vnPayservice)
         {
             this.repo = repo;
             this.accessor = accessor;
+            _vnPayservice = vnPayservice;
         }
 
         LoaiPhongPhongTrangThaiPhong treetable = new LoaiPhongPhongTrangThaiPhong();
@@ -38,108 +43,38 @@ namespace HotelManagement.Controllers
             return View(treetable);
         }
 
-        //[Authentication]
-        //public IActionResult datPhongVaDichVu(string hoten,
-        //    int tuoi,
-        //    int gioitinh,
-        //    string cccd,
-        //    string sdt,
-        //    DateTime ngayden,
-        //    DateTime ngaydi,
-        //    string maphong,
-        //    string selectedServiceIds,
-        //    string servicePrice,
-        //    string selectedQuantities)
-        //{
-        //    if (tuoi == 0 && gioitinh == 0 && cccd == null && sdt == null && ngayden == DateTime.MinValue && ngaydi == DateTime.MinValue)
-        //    {
-        //         return RedirectToAction("Index", "Room",new {error = false});
-        //    }
-        //    Person person = new Person();
-        //    if (accessor.HttpContext.Session.GetString("UserName") != null)
-        //    {
-        //        person = repo.getPersonByUserName(accessor.HttpContext.Session.GetString("UserName"));
-        //    }
-        //    else
-        //    {
-        //        person = new Person
-        //        {
-        //            PersonId = cccd,
-        //            HoTen = hoten,
-        //            Tuoi = tuoi,
-        //            GioiTinh = gioitinh,
-        //            Sdt = sdt
-        //        };
-        //    }
-
-        //    string maorderphong = repo.createOrderPhongId();
-        //    OrderPhong orderphong = new OrderPhong
-        //    {
-        //        MaOrderPhong = maorderphong,
-        //        NgayDen = ngayden,
-        //        NgayDi = ngaydi,
-        //        PersonId = cccd,
-        //        MaPhong = maphong,
-        //        Person = person,
-        //        TrangThaiThanhToan = 0,
-        //        MaPhongNavigation = repo.getPhongByMaPhong(maphong)
-        //    };
-
-
-        //    //đầu tiên add order phòng
-        //    repo.addOrderPhong(orderphong);
-
-        //    //tiếp theo add order phòng và danh sách dịch vụ của order phòng đó
-        //    if (selectedServiceIds != null && selectedQuantities != null && servicePrice != null)
-        //    {
-        //        List<string> madichvu = selectedServiceIds.Split(',').ToList();
-        //        List<int> soLuongMoiDichVu = selectedQuantities.Split(",").Select(int.Parse).ToList();
-        //        List<float> giaMoiDichVu = servicePrice.Split(",").Select(float.Parse).ToList();
-
-        //        List<OrderPhongDichVu> orderphongdichvu = new List<OrderPhongDichVu>();
-        //        for (int i = 0; i < madichvu.Count(); i++)
-        //        {
-        //            orderphongdichvu.Add(new OrderPhongDichVu
-        //            {
-        //                MaOrderPhong = maorderphong,
-        //                MaDichVu = madichvu[i],
-        //                SoLuong = soLuongMoiDichVu[i],
-        //                DonGia = giaMoiDichVu[i]
-        //            });
-        //        }
-
-        //        repo.addOrderPhongDichVu(orderphongdichvu);
-        //    }
-
-
-        //    //cuối cùng update trạng thái phòng là đăng thuê
-
-        //    //người đăng kí phòng là user thì mã trạng thái phòng là đặt trước,nếu là admin thì trạng thái đang thuê
-        //    if (accessor.HttpContext.Session.GetString("UserName") != null)
-        //    {
-        //        repo.updateTrangThaiPhong(maphong, "MTT3");
-        //    }
-        //    else repo.updateTrangThaiPhong(maphong, "MTT2");
-
-        //    return RedirectToAction("Index", "Room", new { error = true });
-        //}
-        public IActionResult datPhongVaDichVu(
-        string hoten,
-        int tuoi,
-        int gioitinh,
-        string cccd,
-        string sdt,
-        DateTime? ngayden,
-        DateTime? ngaydi,
-        string maphong,
-        string selectedServiceIds,
-        string servicePrice,
-        string selectedQuantities)
+        public IActionResult ChiTietPhong(string maphong)
         {
-            // Lấy thông tin user từ session
+            var phong = repo.getChiTietPhong(maphong);
+            return View(phong);
+        }
+
+        [HttpPost]
+        [Authentication]
+        public IActionResult AddReview(ReviewPhong review)
+        {
+            repo.AddReview(review);
+            return RedirectToAction("ChiTietPhong", new { id = review.MaPhong });
+        }
+
+        [Authentication]
+        public IActionResult datPhongVaDichVu(string hoten, int tuoi, int gioitinh, string cccd, string sdt, DateTime? ngayden, DateTime? ngaydi, string maphong, string selectedServiceIds, string servicePrice,
+            string selectedQuantities, int trangThaiThanhToan, double tongTien)
+        {
+            if(trangThaiThanhToan == 1)
+            {
+                var vnPayModel = new VnPaymentRequestModel
+                {
+                    Amount = tongTien,
+                    CreatedDate = DateTime.Now,
+                    Description = $"{hoten} {sdt}",
+                    FullName = hoten,
+                    OrderId = new Random().Next(1000, 100000)
+                };
+                return Redirect(_vnPayservice.CreatePaymentUrl(HttpContext, vnPayModel));
+            }
             var userName = accessor.HttpContext.Session.GetString("UserName");
 
-            // Nếu chưa đăng nhập -> redirect về trang login
             if (string.IsNullOrEmpty(userName))
             {
                 return RedirectToAction("Login", "Account");
@@ -147,12 +82,11 @@ namespace HotelManagement.Controllers
 
             if (string.IsNullOrEmpty(hoten) || tuoi <= 0 || gioitinh < 0 || string.IsNullOrEmpty(cccd)
               || string.IsNullOrEmpty(sdt) || !ngayden.HasValue || !ngaydi.HasValue)
-                    {
-                        return RedirectToAction("Index", "Room", new { error = false });
-                    }
+            {
+                return RedirectToAction("Index", "Room", new { error = false });
+            }
 
 
-            // Lấy thông tin khách hàng từ session
             Person person = repo.getPersonByUserName(userName);
 
             string maorderphong = repo.createOrderPhongId();
@@ -164,7 +98,7 @@ namespace HotelManagement.Controllers
                 PersonId = person.PersonId,
                 MaPhong = maphong,
                 Person = person,
-                TrangThaiThanhToan = 0,
+                TrangThaiThanhToan = trangThaiThanhToan,
                 MaPhongNavigation = repo.getPhongByMaPhong(maphong)
             };
             repo.addOrderPhong(orderphong);
