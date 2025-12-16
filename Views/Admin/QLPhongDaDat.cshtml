@@ -1,0 +1,117 @@
+﻿@model IEnumerable<HotelManagement.Models.OrderPhong>
+
+@{
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Quản lý phòng đã đặt</h3>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive" style="max-height:72vh; overflow:auto;">
+                <table class="table table-hover table-striped mb-0 align-middle">
+                    <thead class="table-light sticky-top">
+                        <tr>
+                            <th style="width:70px">STT</th>
+                            <th>Mã order</th>
+                            <th>Khách hàng</th>
+                            <th>Phòng</th>
+                            <th>Loại phòng</th>
+                            <th>Dịch vụ</th>
+                            <th>Trạng thái</th>
+                            <th class="text-center" style="width:160px">Hành động</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model == null || !Model.Any())
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center text-muted py-4">
+                                    Không có dữ liệu
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            int stt = 1;
+                            foreach (var o in Model)
+                            {
+                                <tr>
+                                    <td>@stt</td>
+
+                                    <td>@o.MaOrderPhong</td>
+
+                                    <td>@o.Person?.HoTen</td>
+
+                                    <td>@o.MaPhongNavigation?.TenPhong</td>
+
+                                    <td>
+                                        @o.MaPhongNavigation?
+                                        .MaLoaiPhongNavigation?
+                                        .TenLoaiPhong
+                                    </td>
+
+                                    <td>
+                                        @if (o.OrderPhongDichVus != null && o.OrderPhongDichVus.Any())
+                                        {
+                                            <ul class="mb-0 ps-3">
+                                                @foreach (var dv in o.OrderPhongDichVus)
+                                                {
+                                                    <li>@dv.MaDichVuNavigation?.TenDichVu</li>
+                                                }
+                                            </ul>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Không</span>
+                                        }
+                                    </td>
+
+                                    <!-- TRẠNG THÁI THANH TOÁN -->
+                                    <td>
+                                        @if (o.TrangThaiThanhToan == 1)
+                                        {
+                                            <span class="badge bg-success">Đã thanh toán</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">
+                                                Chưa thanh toán
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <!-- HÀNH ĐỘNG -->
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <a class="btn btn-sm btn-outline-primary"
+                                               asp-action="ChiTietOrderPhong"
+                                               asp-route-maorder="@o.MaOrderPhong">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+
+                                            @if (o.TrangThaiThanhToan == 0)
+                                            {
+                                                <a class="btn btn-sm btn-success"
+                                                   asp-action="taoHoaDon"
+                                                   asp-route-maorder="@o.MaOrderPhong">
+                                                    <i class="bi bi-cash"></i>
+                                                </a>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                stt++;
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

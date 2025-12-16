@@ -55,16 +55,87 @@ namespace HotelManagement.Controllers
             return RedirectToAction("QLPhong");
         }
 
+        //[AdminAuthentication]
+        //public IActionResult themPhong(string maphong, string tenphong, string motaphong, string matrangthai, string maloaiphong)
+        //{
+        //    repo.themPhong(new Phong
+        //    {
+        //        MaPhong = maphong,
+        //        TenPhong = tenphong,
+        //        MoTaPhong = motaphong,
+        //        MaTrangThai = matrangthai,
+        //        MaLoaiPhong = maloaiphong
+        //    });
+
+        //    return RedirectToAction("QLPhong");
+        //}
+
+
+        //[AdminAuthentication]
+        //public IActionResult suaPhong(string maphong, string tenphong, string motaphong, string matrangthai, string maloaiphong)
+        //{
+        //    repo.suaPhong(new Phong
+        //    {
+        //        MaPhong = maphong,
+        //        TenPhong = tenphong,
+        //        MoTaPhong = motaphong,
+        //        MaTrangThai = matrangthai,
+        //        MaLoaiPhong = maloaiphong
+        //    });
+        //    return RedirectToAction("QLPhong");
+        //}
+
+        [HttpPost]
         [AdminAuthentication]
-        public IActionResult themPhong(string maphong, string tenphong, string motaphong, string matrangthai, string maloaiphong)
+        public IActionResult themPhong(
+            string maphong,
+            string makhachsan,
+            string tenphong,
+            string motaphong,
+            string matrangthai,
+            string maloaiphong,
+            decimal gia,
+            string anh
+        )
         {
             repo.themPhong(new Phong
             {
                 MaPhong = maphong,
+                MaKhachSan = makhachsan,
                 TenPhong = tenphong,
                 MoTaPhong = motaphong,
                 MaTrangThai = matrangthai,
-                MaLoaiPhong = maloaiphong
+                MaLoaiPhong = maloaiphong,
+                Gia = gia,
+                Anh = anh
+            });
+
+            return RedirectToAction("QLPhong");
+        }
+
+        [HttpPost]
+        [AdminAuthentication]
+        public IActionResult suaPhong(
+            string maphong,
+            string makhachsan,
+            string tenphong,
+            string motaphong,
+            string matrangthai,
+            string maloaiphong,
+            decimal gia,
+            string anh
+        )
+        {
+            repo.suaPhong(new Phong
+            {
+                MaPhong = maphong,
+                MaKhachSan = makhachsan,
+                TenPhong = tenphong,
+                MoTaPhong = motaphong,
+                MaTrangThai = matrangthai,
+                MaLoaiPhong = maloaiphong,
+                Gia = gia,
+                Anh = anh
             });
 
             return RedirectToAction("QLPhong");
@@ -77,21 +148,6 @@ namespace HotelManagement.Controllers
             repo.xoaPhong(maphong);
             return RedirectToAction("QLPhong");
         }
-
-        [AdminAuthentication]
-        public IActionResult suaPhong(string maphong, string tenphong, string motaphong, string matrangthai, string maloaiphong)
-        {
-            repo.suaPhong(new Phong
-            {
-                MaPhong = maphong,
-                TenPhong = tenphong,
-                MoTaPhong = motaphong,
-                MaTrangThai = matrangthai,
-                MaLoaiPhong = maloaiphong
-            });
-            return RedirectToAction("QLPhong");
-        }
-
         [AdminOrNhanVienAuthentication]
         public IActionResult QLDichVu(bool error = true)
         {
@@ -152,6 +208,13 @@ namespace HotelManagement.Controllers
         public IActionResult QLHoaDon()
         {
             return View(repo.GetHoaDon);
+        }
+
+        [AdminOrNhanVienAuthentication]
+        public IActionResult QLPhongDaDat()
+        {
+            var orders = repo.getOrderPhongChuaThanhToan();
+            return View(orders);
         }
 
 

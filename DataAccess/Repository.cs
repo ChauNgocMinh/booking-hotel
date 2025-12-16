@@ -549,5 +549,17 @@ namespace HotelManagement.DataAccess
                         .ThenInclude(od => od.MaDichVuNavigation);
         }
 
+        public IEnumerable<OrderPhong> getOrderPhongChuaThanhToan()
+        {
+            return context.OrderPhongs
+                .Where(o => o.TrangThaiThanhToan == 0)
+                .Include(o => o.Person)
+                .Include(o => o.MaPhongNavigation)
+                    .ThenInclude(p => p.MaLoaiPhongNavigation)
+                .Include(o => o.OrderPhongDichVus)
+                    .ThenInclude(od => od.MaDichVuNavigation);
+        }
+
+
     }
 }

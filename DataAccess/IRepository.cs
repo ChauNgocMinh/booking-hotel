@@ -125,5 +125,7 @@ namespace HotelManagement.DataAccess
         void updateLoaiTaiKhoan(LoaiTaiKhoan loaitaikhoancansua);
 
         bool updateTaiKhoan(string mataikhoan,string username, string password);
+        IEnumerable<OrderPhong> getOrderPhongChuaThanhToan();
+
     }
 }

@@ -1,0 +1,30 @@
+﻿@model IEnumerable<HotelManagement.Models.KhachSan>
+
+@{
+    ViewData["Title"] = "Danh sách khách sạn";
+}
+
+<h2 class="text-center my-4">Danh sách khách sạn</h2>
+
+<div class="row">
+    @foreach (var ks in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <img src="@ks.AnhDaiDien" class="card-img-top" alt="@ks.TenKhachSan" style="height:200px; object-fit:cover;" />
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">@ks.TenKhachSan</h5>
+                    <p class="card-text">
+                        <strong>Địa chỉ:</strong> @ks.DiaChi <br />
+                        <strong>Điện thoại:</strong> @ks.SoDienThoai <br />
+                        <strong>Email:</strong> @ks.Email <br />
+                        <strong>Mô tả:</strong> @ks.MoTa
+                    </p>
+                    <a asp-controller="KhachSan" asp-action="Detail" asp-route-id="@ks.MaKhachSan" class="btn btn-primary mt-auto">
+                        Xem chi tiết
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
