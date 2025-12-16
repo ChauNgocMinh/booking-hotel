@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelManagement.Migrations
 {
     [DbContext(typeof(HotelContext))]
-    [Migration("20231117091118_fourth")]
-    partial class fourth
+    [Migration("20251216143928_addTrangThaiDatPhong")]
+    partial class addTrangThaiDatPhong
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -30,8 +30,8 @@ namespace HotelManagement.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<float>("GiaDichVu")
-                        .HasColumnType("real");
+                    b.Property<decimal>("GiaDichVu")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("TenDichVu")
                         .HasMaxLength(255)
@@ -79,14 +79,44 @@ namespace HotelManagement.Migrations
                     b.ToTable("Khach_Hang", (string)null);
                 });
 
+            modelBuilder.Entity("HotelManagement.Models.KhachSan", b =>
+                {
+                    b.Property<string>("MaKhachSan")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("AnhDaiDien")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DiaChi")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("MoTa")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SoDienThoai")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("TenKhachSan")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("MaKhachSan");
+
+                    b.ToTable("KhachSan", (string)null);
+                });
+
             modelBuilder.Entity("HotelManagement.Models.LoaiPhong", b =>
                 {
                     b.Property<string>("MaLoaiPhong")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
-
-                    b.Property<float>("GiaPhong")
-                        .HasColumnType("real");
 
                     b.Property<string>("TenLoaiPhong")
                         .HasMaxLength(255)
@@ -156,6 +186,12 @@ namespace HotelManagement.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("PersonID");
 
+                    b.Property<string>("TrangThaiDatPhong")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TrangThaiThanhToan")
+                        .HasColumnType("int");
+
                     b.HasKey("MaOrderPhong")
                         .HasName("PK__Order_Ph__829E7C7605A5F40A");
 
@@ -176,8 +212,8 @@ namespace HotelManagement.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<float?>("DonGia")
-                        .HasColumnType("real");
+                    b.Property<decimal?>("DonGia")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("SoLuong")
                         .HasColumnType("int");
@@ -235,6 +271,15 @@ namespace HotelManagement.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<string>("Anh")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Gia")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("MaKhachSan")
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<string>("MaLoaiPhong")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
@@ -254,11 +299,46 @@ namespace HotelManagement.Migrations
                     b.HasKey("MaPhong")
                         .HasName("PK__Phong__20BD5E5B177E3D28");
 
+                    b.HasIndex("MaKhachSan");
+
                     b.HasIndex("MaLoaiPhong");
 
-                    b.HasIndex("MaTrangThai");
-
                     b.ToTable("Phong", (string)null);
+                });
+
+            modelBuilder.Entity("HotelManagement.Models.ReviewKhachSan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MaPhong")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("PersonId")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaPhong");
+
+                    b.HasIndex("PersonId");
+
+                    b.ToTable("ReviewKhachSan", (string)null);
                 });
 
             modelBuilder.Entity("HotelManagement.Models.TaiKhoan", b =>
@@ -294,22 +374,6 @@ namespace HotelManagement.Migrations
                     b.ToTable("Tai_Khoan", (string)null);
                 });
 
-            modelBuilder.Entity("HotelManagement.Models.TrangThaiPhong", b =>
-                {
-                    b.Property<string>("MaTrangThai")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("TenTrangThai")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.HasKey("MaTrangThai")
-                        .HasName("PK__Trang_Th__AADE41383344BB34");
-
-                    b.ToTable("Trang_Thai_Phong", (string)null);
-                });
-
             modelBuilder.Entity("HotelManagement.Models.VaiTro", b =>
                 {
                     b.Property<string>("MaVaiTro")
@@ -331,6 +395,7 @@ namespace HotelManagement.Migrations
                     b.HasOne("HotelManagement.Models.OrderPhong", "MaOrderPhongNavigation")
                         .WithMany("HoaDons")
                         .HasForeignKey("MaOrderPhong")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FKHoa_Don624260");
 
                     b.Navigation("MaOrderPhongNavigation");
@@ -341,6 +406,7 @@ namespace HotelManagement.Migrations
                     b.HasOne("HotelManagement.Models.Person", "KhachHangNavigation")
                         .WithOne("KhachHang")
                         .HasForeignKey("HotelManagement.Models.KhachHang", "KhachHangId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FKKhach_Hang279424");
 
@@ -352,11 +418,13 @@ namespace HotelManagement.Migrations
                     b.HasOne("HotelManagement.Models.VaiTro", "MaVaiTroNavigation")
                         .WithMany("NhanViens")
                         .HasForeignKey("MaVaiTro")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FKNhan_Vien799741");
 
                     b.HasOne("HotelManagement.Models.Person", "NhanVienNavigation")
                         .WithOne("NhanVien")
                         .HasForeignKey("HotelManagement.Models.NhanVien", "NhanVienId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FKNhan_Vien605300");
 
@@ -370,11 +438,13 @@ namespace HotelManagement.Migrations
                     b.HasOne("HotelManagement.Models.Phong", "MaPhongNavigation")
                         .WithMany("OrderPhongs")
                         .HasForeignKey("MaPhong")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FKOrder_Phon460975");
 
                     b.HasOne("HotelManagement.Models.Person", "Person")
                         .WithMany("OrderPhongs")
                         .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FKOrder_Phon746646");
 
                     b.Navigation("MaPhongNavigation");
@@ -387,12 +457,14 @@ namespace HotelManagement.Migrations
                     b.HasOne("HotelManagement.Models.DichVu", "MaDichVuNavigation")
                         .WithMany("OrderPhongDichVus")
                         .HasForeignKey("MaDichVu")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FKOrder_Phon597344");
 
                     b.HasOne("HotelManagement.Models.OrderPhong", "MaOrderPhongNavigation")
                         .WithMany("OrderPhongDichVus")
                         .HasForeignKey("MaOrderPhong")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FKOrder_Phon17642");
 
@@ -403,20 +475,37 @@ namespace HotelManagement.Migrations
 
             modelBuilder.Entity("HotelManagement.Models.Phong", b =>
                 {
+                    b.HasOne("HotelManagement.Models.KhachSan", "KhachSan")
+                        .WithMany("Phongs")
+                        .HasForeignKey("MaKhachSan")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("HotelManagement.Models.LoaiPhong", "MaLoaiPhongNavigation")
                         .WithMany("Phongs")
                         .HasForeignKey("MaLoaiPhong")
                         .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FKPhong134689");
 
-                    b.HasOne("HotelManagement.Models.TrangThaiPhong", "MaTrangThaiNavigation")
-                        .WithMany("Phongs")
-                        .HasForeignKey("MaTrangThai")
-                        .HasConstraintName("FKPhong128242");
+                    b.Navigation("KhachSan");
 
                     b.Navigation("MaLoaiPhongNavigation");
+                });
 
-                    b.Navigation("MaTrangThaiNavigation");
+            modelBuilder.Entity("HotelManagement.Models.ReviewKhachSan", b =>
+                {
+                    b.HasOne("HotelManagement.Models.KhachSan", "KhachSan")
+                        .WithMany("ReviewKhachSans")
+                        .HasForeignKey("MaPhong")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("HotelManagement.Models.Person", "Person")
+                        .WithMany()
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("KhachSan");
+
+                    b.Navigation("Person");
                 });
 
             modelBuilder.Entity("HotelManagement.Models.TaiKhoan", b =>
@@ -424,11 +513,13 @@ namespace HotelManagement.Migrations
                     b.HasOne("HotelManagement.Models.LoaiTaiKhoan", "LoaiTaiKhoanNavigation")
                         .WithMany("TaiKhoans")
                         .HasForeignKey("LoaiTaiKhoan")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FKTai_Khoan92928");
 
                     b.HasOne("HotelManagement.Models.Person", "Person")
                         .WithMany("TaiKhoans")
                         .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FKTai_Khoan172310");
 
                     b.Navigation("LoaiTaiKhoanNavigation");
@@ -439,6 +530,13 @@ namespace HotelManagement.Migrations
             modelBuilder.Entity("HotelManagement.Models.DichVu", b =>
                 {
                     b.Navigation("OrderPhongDichVus");
+                });
+
+            modelBuilder.Entity("HotelManagement.Models.KhachSan", b =>
+                {
+                    b.Navigation("Phongs");
+
+                    b.Navigation("ReviewKhachSans");
                 });
 
             modelBuilder.Entity("HotelManagement.Models.LoaiPhong", b =>
@@ -472,11 +570,6 @@ namespace HotelManagement.Migrations
             modelBuilder.Entity("HotelManagement.Models.Phong", b =>
                 {
                     b.Navigation("OrderPhongs");
-                });
-
-            modelBuilder.Entity("HotelManagement.Models.TrangThaiPhong", b =>
-                {
-                    b.Navigation("Phongs");
                 });
 
             modelBuilder.Entity("HotelManagement.Models.VaiTro", b =>

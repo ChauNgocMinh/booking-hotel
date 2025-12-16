@@ -4,22 +4,21 @@
 
 namespace HotelManagement.Migrations
 {
-    public partial class fifth : Migration
+    public partial class addTrangThaiDatPhong : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "TrangThaiThanhToan",
+            migrationBuilder.AddColumn<string>(
+                name: "TrangThaiDatPhong",
                 table: "Order_Phong",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
+                type: "nvarchar(max)",
+                nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "TrangThaiThanhToan",
+                name: "TrangThaiDatPhong",
                 table: "Order_Phong");
         }
     }

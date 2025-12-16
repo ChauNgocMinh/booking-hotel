@@ -18,16 +18,15 @@ namespace HotelManagement.Controllers
 
         public IActionResult Index()
         {
-
             var khachSans = repo.getListKhachSan().Result;
             return View(khachSans);
         }
+
         public IActionResult Detail(string id)
         {
             if (string.IsNullOrEmpty(id))
                 return NotFound();
 
-            // Lấy khách sạn theo id
             var khachSan = repo.getListKhachSan().Result.FirstOrDefault(ks => ks.MaKhachSan == id);
 
             if (khachSan == null)

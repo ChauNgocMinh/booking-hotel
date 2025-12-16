@@ -184,6 +184,9 @@ namespace HotelManagement.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("PersonID");
 
+                    b.Property<string>("TrangThaiDatPhong")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("TrangThaiThanhToan")
                         .HasColumnType("int");
 

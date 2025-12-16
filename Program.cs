@@ -30,7 +30,7 @@ namespace HotelManagement
 
 
             builder.Services.AddScoped<IRepository, Repository>();
-            builder.Services.AddScoped<IVnPayService, VnPayService>();
+            builder.Services.AddScoped<PayPalService>();
 
             var app = builder.Build();
 

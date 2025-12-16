@@ -17,6 +17,7 @@ namespace HotelManagement.Models
         public string PersonId { get; set; } = null!;
         public string MaPhong { get; set; } = null!;
         public int TrangThaiThanhToan { get; set; }  = 0;
+        public string TrangThaiDatPhong { get; set; }
 
         public virtual Phong MaPhongNavigation { get; set; } = null!;
         public virtual Person Person { get; set; } = null!;
