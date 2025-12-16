@@ -28,6 +28,7 @@ namespace HotelManagement
                 option.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"]);
             });
 
+            builder.Services.AddHttpClient();
 
             builder.Services.AddScoped<IRepository, Repository>();
             builder.Services.AddScoped<PayPalService>();
