@@ -21,8 +21,9 @@
                             <th>Phòng</th>
                             <th>Loại phòng</th>
                             <th>Dịch vụ</th>
-                            <th>Trạng thái</th>
-                            <th class="text-center" style="width:160px">Hành động</th>
+                            <th>Trạng thái thanh toán</th>
+                            <th>Trạng thái đặt phòng</th>
+                            <th class="text-center" style="width:120px">Hành động</th>
                         </tr>
                     </thead>
 
@@ -30,7 +31,7 @@
                         @if (Model == null || !Model.Any())
                         {
                             <tr>
-                                <td colspan="8" class="text-center text-muted py-4">
+                                <td colspan="9" class="text-center text-muted py-4">
                                     Không có dữ liệu
                                 </td>
                             </tr>
@@ -42,17 +43,10 @@
                             {
                                 <tr>
                                     <td>@stt</td>
-
                                     <td>@o.MaOrderPhong</td>
-
                                     <td>@o.Person?.HoTen</td>
-
                                     <td>@o.MaPhongNavigation?.TenPhong</td>
-
-                                    <td>
-                                        @o.MaPhongNavigation?.MaLoaiPhongNavigation?.TenLoaiPhong
-                                    </td>
-
+                                    <td>@o.MaPhongNavigation?.MaLoaiPhongNavigation?.TenLoaiPhong</td>
                                     <td>
                                         @if (o.OrderPhongDichVus != null && o.OrderPhongDichVus.Any())
                                         {
@@ -77,33 +71,36 @@
                                         }
                                         else
                                         {
-                                            <span class="badge bg-warning text-dark">
-                                                Chưa thanh toán
-                                            </span>
+                                            <span class="badge bg-warning text-dark">Chưa thanh toán</span>
+                                        }
+                                    </td>
+
+                                    <!-- TRẠNG THÁI ĐẶT PHÒNG -->
+                                    <td>
+                                        @if (o.TrangThaiDatPhong == "Active")
+                                        {
+                                            <span class="badge bg-success">Đang ở</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">Chưa thực hiện</span>
                                         }
                                     </td>
 
                                     <!-- HÀNH ĐỘNG -->
                                     <td class="text-center">
-                                        <div class="btn-group">
-                                            <a class="btn btn-sm btn-outline-primary"
-                                               asp-action="ChiTietOrderPhong"
-                                               asp-route-maorder="@o.MaOrderPhong">
-                                                <i class="bi bi-eye"></i>
+                                        @if (o.TrangThaiDatPhong != "Active")
+                                        {
+                                            <a class="btn btn-sm btn-primary"
+                                               asp-controller="Room"
+                                               asp-action="xacNhanDatPhong"
+                                               asp-route-maorder="@o.MaOrderPhong"
+                                               asp-route-maphong="@o.MaPhong">
+                                                Xác nhận
                                             </a>
-
-                                            @if (o.TrangThaiThanhToan == 0)
-                                            {
-                                                <a class="btn btn-sm btn-success"
-                                                   asp-action="taoHoaDon"
-                                                   asp-route-maorder="@o.MaOrderPhong">
-                                                    <i class="bi bi-cash"></i>
-                                                </a>
-                                            }
-                                        </div>
+                                        }
                                     </td>
                                 </tr>
-
                                 stt++;
                             }
                         }

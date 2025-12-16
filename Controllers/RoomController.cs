@@ -257,13 +257,35 @@ namespace HotelManagement.Controllers
 
         }
 
+        //[AdminOrNhanVienAuthentication]
+        //public IActionResult xacNhanDatPhong(string maphong)
+        //{
+        //    //khi xác nhận đặt phòng thì phòng chuyển sang trạng thái đã đặt nghĩa là khách đang ở
+        //    repo.updateTrangThaiPhong(maphong, "MTT2");
+        //    return RedirectToAction("Index");
+        //}
+
         [AdminOrNhanVienAuthentication]
-        public IActionResult xacNhanDatPhong(string maphong)
+        public IActionResult xacNhanDatPhong(string maorder, string maphong)
         {
-            //khi xác nhận đặt phòng thì phòng chuyển sang trạng thái đã đặt nghĩa là khách đang ở
-            repo.updateTrangThaiPhong(maphong, "MTT2");
+            if (!string.IsNullOrEmpty(maorder) && !string.IsNullOrEmpty(maphong))
+            {
+                // 1. Update trạng thái phòng
+                repo.updateTrangThaiPhong(maphong, "MTT2"); // Đang ở
+
+                // 2. Update trạng thái đặt phòng chỉ cho order được chọn
+                var order = repo.getOrderPhongByMaPhong(maphong)
+                                .FirstOrDefault(o => o.MaOrderPhong == maorder); // Dựa vào mã orderPhong
+                if (order != null)
+                {
+                    order.TrangThaiDatPhong = "Active";
+                    repo.updateOrderPhong(order); // Update order cụ thể
+                }
+            }
+
             return RedirectToAction("Index");
         }
+
 
 
     }

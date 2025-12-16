@@ -406,9 +406,24 @@ namespace HotelManagement.DataAccess
             return false;
         }
 
+        //public void updateTrangThaiPhongs(IEnumerable<Phong> phongs)
+        //{
+        //    context.Phongs.UpdateRange(phongs);
+        //    context.SaveChanges();
+        //}
         public void updateTrangThaiPhongs(IEnumerable<Phong> phongs)
         {
-            context.Phongs.UpdateRange(phongs);
+            if (phongs == null) return;
+
+            foreach (var phong in phongs)
+            {
+                var p = context.Phongs.FirstOrDefault(x => x.MaPhong == phong.MaPhong);
+                if (p != null)
+                {
+                    p.MaTrangThai = phong.MaTrangThai; // hoặc gán trạng thái nào bạn muốn
+                }
+            }
+
             context.SaveChanges();
         }
 
@@ -560,6 +575,21 @@ namespace HotelManagement.DataAccess
                     .ThenInclude(od => od.MaDichVuNavigation);
         }
 
+        public void updateOrderPhong(OrderPhong order)
+        {
+            context.OrderPhongs.Update(order);
+            context.SaveChanges();
+        }
+
+        public TaiKhoan GetAccountByUserName(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+                return null;
+
+            return context.TaiKhoans
+                          .Include(tk => tk.Person)
+                          .FirstOrDefault(tk => tk.UserName == username);
+        }
 
     }
 }

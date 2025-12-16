@@ -1,0 +1,55 @@
+﻿@model HotelManagement.Models.Person
+
+@{
+    Layout = "_Layout"; // Hoặc "_AdminLayout"
+    ViewData["Title"] = "Thông tin cá nhân";
+}
+
+<div class="container py-4">
+    <h2 class="mb-4">Thông tin cá nhân</h2>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <div class="row mb-3">
+                <div class="col-md-3 font-weight-bold">Họ tên:</div>
+                <div class="col-md-9">@Model.HoTen</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3 font-weight-bold">Tuổi:</div>
+                <div class="col-md-9">@Model.Tuoi</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3 font-weight-bold">Giới tính:</div>
+                <div class="col-md-9">
+                    @(Model.GioiTinh == 1 ? "Nam" : Model.GioiTinh == 0 ? "Nữ" : "Khác")
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3 font-weight-bold">Ngày sinh:</div>
+                <div class="col-md-9">@Model.NgaySinh?.ToString("dd/MM/yyyy")</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3 font-weight-bold">Số điện thoại:</div>
+                <div class="col-md-9">@Model.Sdt</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3 font-weight-bold">Căn cước công dân:</div>
+                <div class="col-md-9">@Model.Cccd</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3 font-weight-bold">Địa chỉ:</div>
+                <div class="col-md-9">@Model.DiaChi</div>
+            </div>
+
+            <a class="btn btn-primary mt-3" asp-controller="Account" asp-action="EditProfile">Chỉnh sửa</a>
+
+        </div>
+    </div>
+</div>
