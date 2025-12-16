@@ -21,7 +21,7 @@
                 var order = Model?.MaOrderPhongNavigation;
                 var phong = order?.MaPhongNavigation;
                 var loaiphong = phong?.MaLoaiPhongNavigation;
-                decimal giaPhong = loaiphong != null ? Convert.ToDecimal(loaiphong.GiaPhong) : 0m;
+                decimal giaPhong = phong != null ? Convert.ToDecimal(phong.Gia) : 0m;
                 string tenPhong = phong?.TenPhong ?? "—";
                 DateTime? ngayDen = order?.NgayDen != null ? (DateTime?)Convert.ToDateTime(order.NgayDen) : null;
                 DateTime? ngayDi = order?.NgayDi != null ? (DateTime?)Convert.ToDateTime(order.NgayDi) : null;

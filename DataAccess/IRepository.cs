@@ -4,6 +4,8 @@ namespace HotelManagement.DataAccess
 {
     public interface IRepository
     {
+        Task<List<KhachSan>> getListKhachSan();
+
         IEnumerable<Person> getPeople { get; }
 
         bool CreateAccount(TaiKhoan a);
@@ -18,16 +20,18 @@ namespace HotelManagement.DataAccess
         IEnumerable<Phong> getPhongByLoaiPhong(string id);
 
         Phong getChiTietPhong(string id);
+        IEnumerable<Phong> FilterPhong(string loaiphong,
+    DateTime? ngayden,
+    DateTime? ngaydi,
+    string khachsan);
 
-        void AddReview(ReviewPhong model);
+        void AddReview(ReviewKhachSan model);
 
         void removeLoaiPhong(string id);
 
         void themLoaiPhong(LoaiPhong newloaiphong);
 
         void suaLoaiPhong(LoaiPhong phongcuasua);
-
-        public IEnumerable<TrangThaiPhong> getTrangThaiPhong { get; }
 
         void themPhong(Phong newphong);
 
@@ -37,7 +41,9 @@ namespace HotelManagement.DataAccess
 
         public IEnumerable<Phong> getPhongByMaTrangThai(string trangthai);
 
-        public IEnumerable<DichVu> getDichvu { get; }
+        public Task<DichVu> getDichvu(string id);
+
+        public Task<List<DichVu>> getDichVuByIds(List<string> ids);
 
         string createOrderPhongId();
 

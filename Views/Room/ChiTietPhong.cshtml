@@ -1,35 +1,104 @@
 ﻿@model Phong
-@inject IHttpContextAccessor accessor
 
-<div class="container mt-4">
+@{
+    var dichvus = ViewData["DichVus"] as List<DichVu>;
+    var bookedRanges = Model.OrderPhongs
+        .Where(o => o.NgayDen.HasValue && o.NgayDi.HasValue)
+        .Select(o => new
+        {
+            start = o.NgayDen!.Value.ToString("yyyy-MM-dd"),
+            end = o.NgayDi!.Value.ToString("yyyy-MM-dd")
+        })
+        .ToList();
+}
 
-    <div class="row">
-        <!-- Ảnh phòng -->
-        <div class="col-md-5">
-            <img src="~/pictures/@(
-                Model.MaLoaiPhongNavigation.MaLoaiPhong == "MLP1" ? "phongdon.png" :
-                Model.MaLoaiPhongNavigation.MaLoaiPhong == "MLP2" ? "phongdoi.png" :
-                Model.MaLoaiPhongNavigation.MaLoaiPhong == "MLP3" ? "phonggiadinh.jpg" :
-                "phongvip.jpg"
-            )" 
-            class="img-fluid rounded shadow" />
-        </div>
+<form asp-action="DatPhong" method="post">
+    <input type="hidden" name="MaPhong" value="@Model.MaPhong" />
+    <input type="hidden" name="NgayDen" id="NgayDen" />
+    <input type="hidden" name="NgayDi" id="NgayDi" />
 
-        <!-- Thông tin phòng -->
-        <div class="col-md-7">
-            <h2>@Model.TenPhong</h2>
-            <p class="text-muted">@Model.MaLoaiPhongNavigation.TenLoaiPhong</p>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-5">
+                <img src="@Model.Anh" class="img-fluid rounded shadow" />
+            </div>
 
-            <h4 class="text-danger fw-bold">Giá: @String.Format("{0:N0}", Model.MaLoaiPhongNavigation.GiaPhong) VND</h4>
+            <div class="col-md-7">
+                <h2>@Model.TenPhong</h2>
+                <p class="text-muted">@Model.MaLoaiPhongNavigation.TenLoaiPhong</p>
 
-            <p class="mt-3">@Model.MoTaPhong</p>
+                <h4 class="text-danger fw-bold">
+                    Giá: @String.Format("{0:N0}", Model.Gia) VND
+                </h4>
 
-            <p><strong>Trạng thái:</strong> @Model.MaTrangThaiNavigation.TenTrangThai</p>
+                <div class="mt-3">
+                    <label class="fw-bold">Chọn ngày thuê</label>
+                    <input type="text" id="dateRange" class="form-control" readonly required />
+                </div>
 
-            <a asp-controller="Room" asp-action="Index" class="btn btn-secondary mt-3">Quay lại</a>
+                <h5 class="fw-bold mt-3">Dịch vụ</h5>
+                @foreach (var dv in dichvus!)
+                {
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="DichVuIds"
+                               value="@dv.MaDichVu" />
+                        <label class="form-check-label">
+                            @dv.TenDichVu (@String.Format("{0:N0}", dv.GiaDichVu))
+                        </label>
+                    </div>
+                }
+
+                <div class="mt-3">
+                    <select class="form-select" name="trangThaiThanhToan">
+                        <option value="0">Thanh toán tại khách sạn</option>
+                        <option value="1">Thanh toán VNPAY</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-4 w-100">
+                    Đặt phòng
+                </button>
+            </div>
         </div>
     </div>
+</form>
 
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+    <script>
+        const bookedRanges = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(bookedRanges));
+
+        function isBooked(date) {
+            return bookedRanges.some(b =>
+                date.isSameOrAfter(moment(b.start)) &&
+                date.isBefore(moment(b.end))
+            );
+        }
+
+        $('#dateRange').daterangepicker({
+            autoUpdateInput: false,
+            minDate: moment(),
+            isInvalidDate: isBooked
+        });
+
+        $('#dateRange').on('apply.daterangepicker', function (ev, picker) {
+            $('#NgayDen').val(picker.startDate.format('YYYY-MM-DD'));
+            $('#NgayDi').val(picker.endDate.format('YYYY-MM-DD'));
+            $(this).val(
+                picker.startDate.format('DD/MM/YYYY') +
+                ' - ' +
+                picker.endDate.format('DD/MM/YYYY')
+            );
+        });
+    </script>
+}
+
+@* 
     <hr class="my-4" />
 
     <h3>Đánh giá phòng</h3>
@@ -57,9 +126,9 @@
     <!-- DANH SÁCH REVIEW -->
     <h4 class="mt-4">Các đánh giá gần đây</h4>
 
-    @if (Model.ReviewPhongs != null && Model.ReviewPhongs.Count > 0)
+    @if (Model.ReviewKhachSans != null && Model.ReviewKhachSans.Count > 0)
     {
-        foreach (var rv in Model.ReviewPhongs.OrderByDescending(x => x.CreatedAt))
+        foreach (var rv in Model.ReviewKhachSans.OrderByDescending(x => x.CreatedAt))
         {
             <div class="border rounded p-3 mb-3 shadow-sm bg-light">
                 <strong>@rv.Person.HoTen</strong> 
@@ -73,4 +142,4 @@
         <p class="text-muted">Phòng chưa có đánh giá nào.</p>
     }
 
-</div>
+</div> *@

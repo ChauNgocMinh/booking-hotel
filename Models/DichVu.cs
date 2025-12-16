@@ -12,7 +12,7 @@ namespace HotelManagement.Models
 
         public string MaDichVu { get; set; } = null!;
         public string? TenDichVu { get; set; }
-        public float GiaDichVu { get; set; }
+        public decimal GiaDichVu { get; set; }
 
         public virtual ICollection<OrderPhongDichVu> OrderPhongDichVus { get; set; }
     }

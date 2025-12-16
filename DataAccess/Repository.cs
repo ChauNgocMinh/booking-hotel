@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Security.Permissions;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Transactions;
 
 namespace HotelManagement.DataAccess
@@ -18,6 +19,7 @@ namespace HotelManagement.DataAccess
         }
 
         public IEnumerable<Person> getPeople => this.context.People;
+
 
 
         public TaiKhoan CheckAccount(TaiKhoan a)
@@ -84,29 +86,24 @@ namespace HotelManagement.DataAccess
             return s4;
         }
 
-        public void AddReview(ReviewPhong model)
+        public void AddReview(ReviewKhachSan model)
         {
             model.CreatedAt = DateTime.Now;
 
-            context.ReviewPhongs.Add(model);
+            context.ReviewKhachSans.Add(model);
             context.SaveChanges();
         }
 
         public Phong getChiTietPhong(string id)
         {
             return context.Phongs
-                   .Include(x => x.ReviewPhongs)
-                       .ThenInclude(r => r.Person)
-                   .Include(x => x.MaLoaiPhongNavigation)
-                   .Include(x => x.MaTrangThaiNavigation)
-                   .FirstOrDefault(p => p.MaPhong == id);
+                .Include(p => p.MaLoaiPhongNavigation)
+                .Include(p => p.OrderPhongs.Where(o => o.TrangThaiThanhToan == 0))
+                .FirstOrDefault(p => p.MaPhong == id);
         }
 
         public void removeLoaiPhong(string id)
         {
-            //khi xóa loaiphong thì tất cả các phòng thuộc loại phòng đó đều bị xóa
-            //do trong file context Phong có .Ondelete là cascade
-
             var loaiphong = context.LoaiPhongs.Where(lp => lp.MaLoaiPhong == id).FirstOrDefault();
             context.Remove(loaiphong);
             context.SaveChanges();
@@ -123,9 +120,6 @@ namespace HotelManagement.DataAccess
             context.Update(phongcuasua);
             context.SaveChanges();
         }
-
-        public IEnumerable<TrangThaiPhong> getTrangThaiPhong => context.TrangThaiPhongs;
-
 
         public void themPhong(Phong newphong)
         {
@@ -155,8 +149,17 @@ namespace HotelManagement.DataAccess
                 .ThenInclude(odpdv => odpdv.MaDichVuNavigation);
         }
 
-        public IEnumerable<DichVu> getDichvu => context.DichVus;
+        public async Task<DichVu> getDichvu(string id)
+        {
+            return await context.DichVus.FirstOrDefaultAsync(x => x.MaDichVu == id);
+        }
 
+        public async Task<List<DichVu>> getDichVuByIds(List<string> ids)
+        {
+            return await context.DichVus
+                .Where(x => ids.Contains(x.MaDichVu))
+                .ToListAsync();
+        }
 
         public string createOrderPhongId()
         {
@@ -192,11 +195,6 @@ namespace HotelManagement.DataAccess
 
         public void addOrderPhong(OrderPhong orderPhong)
         {
-            if (context.People.Where(p => p.PersonId == orderPhong.PersonId).Any())
-            {
-                context.People.Update(orderPhong.Person);
-                context.SaveChanges();
-            }
             //khi add orderPhong thi thông tin người order cũng được lưu tại vì trong orderPhong có Person 
             context.OrderPhongs.Add(orderPhong);
             context.SaveChanges();
@@ -220,7 +218,7 @@ namespace HotelManagement.DataAccess
         }
         public Phong getPhongByMaPhong(string id)
         {
-            return context.Phongs.Where(p => p.MaPhong == id).FirstOrDefault();
+            return context.Phongs.Where(p => p.MaPhong == id).Include(x =>x.MaLoaiPhongNavigation).FirstOrDefault();
         }
 
 
@@ -518,6 +516,38 @@ namespace HotelManagement.DataAccess
             }
         }
 
+        public async Task<List<KhachSan>> getListKhachSan()
+        {
+            return await context.KhachSans.ToListAsync();
+        }
+
+        public IEnumerable<Phong> FilterPhong(
+            string loaiphong,
+            DateTime? ngayden,
+            DateTime? ngaydi,
+            string khachsan)
+        {
+            var query = context.Phongs.AsQueryable();
+
+            if (!string.IsNullOrEmpty(loaiphong))
+                query = query.Where(p => p.MaLoaiPhong == loaiphong);
+
+            if (!string.IsNullOrEmpty(khachsan))
+                query = query.Where(p => p.MaKhachSan == khachsan);
+
+            if (ngayden.HasValue && ngaydi.HasValue)
+                query = query.Where(p =>
+                    !p.OrderPhongs.Any(o =>
+                        o.NgayDen < ngaydi &&
+                        o.NgayDi > ngayden));
+
+            return query
+                .Include(p => p.OrderPhongs.Where(o => o.TrangThaiThanhToan == 0))
+                    .ThenInclude(o => o.Person)
+                .Include(p => p.OrderPhongs.Where(o => o.TrangThaiThanhToan == 0))
+                    .ThenInclude(o => o.OrderPhongDichVus)
+                        .ThenInclude(od => od.MaDichVuNavigation);
+        }
 
     }
 }

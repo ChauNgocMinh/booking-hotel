@@ -22,8 +22,7 @@ namespace HotelManagement.Controllers
         {
             var loaiphong = repo.getLoaiPhong.ToList();
             var phong = repo.getPhongByLoaiPhong(id).ToList();
-            var trangthaiphong = repo.getTrangThaiPhong.ToList();
-            return View(new LoaiPhongAndPhong { lp = loaiphong, p = phong, ttp = trangthaiphong });
+            return View(new LoaiPhongAndPhong { lp = loaiphong, p = phong });
         }
 
         [Route("[controller]/phong/[action]/{maloaiphong}")]
@@ -36,13 +35,12 @@ namespace HotelManagement.Controllers
 
         [AdminAuthentication]
         [HttpPost]
-        public IActionResult themLoaiPhong(string maloaiphong, string tenloaiphong, float gialoaiphong)
+        public IActionResult themLoaiPhong(string maloaiphong, string tenloaiphong)
         {
             LoaiPhong newLoaiPhong = new LoaiPhong
             {
                 MaLoaiPhong = maloaiphong,
                 TenLoaiPhong = tenloaiphong,
-                GiaPhong = gialoaiphong,
             };
             repo.themLoaiPhong(newLoaiPhong);
 
@@ -51,9 +49,9 @@ namespace HotelManagement.Controllers
         }
 
         [AdminAuthentication]
-        public IActionResult suaLoaiPhong(string maloaiphong, string tenloaiphong, float gialoaiphong)
+        public IActionResult suaLoaiPhong(string maloaiphong, string tenloaiphong)
         {
-            repo.suaLoaiPhong(new LoaiPhong { MaLoaiPhong = maloaiphong, TenLoaiPhong = tenloaiphong, GiaPhong = gialoaiphong });
+            repo.suaLoaiPhong(new LoaiPhong { MaLoaiPhong = maloaiphong, TenLoaiPhong = tenloaiphong });
             return RedirectToAction("QLPhong");
         }
 
@@ -102,7 +100,7 @@ namespace HotelManagement.Controllers
         }
 
         [AdminOrNhanVienAuthentication]
-        public IActionResult updateDichVu(string madichvu,string tendichvu,float giadichvu)
+        public IActionResult updateDichVu(string madichvu,string tendichvu,decimal giadichvu)
         {
             DichVu dichvu = new DichVu
             {
@@ -130,7 +128,7 @@ namespace HotelManagement.Controllers
         }
 
         [AdminOrNhanVienAuthentication]
-        public IActionResult themDichVu(string madichvu,string tendichvu,float giadichvu)
+        public IActionResult themDichVu(string madichvu,string tendichvu,decimal giadichvu)
         {
             DichVu dichvu = new DichVu
             {
@@ -374,7 +372,6 @@ namespace HotelManagement.Controllers
     {
         public List<LoaiPhong> lp { get; set; }
         public List<Phong> p { get; set; }
-        public List<TrangThaiPhong> ttp { get; set; }
     }
 
 

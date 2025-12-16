@@ -6,6 +6,7 @@ using HotelManagement.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata;
+using System.Threading.Tasks;
 
 namespace HotelManagement.Controllers
 {
@@ -25,43 +26,122 @@ namespace HotelManagement.Controllers
         LoaiPhongPhongTrangThaiPhong treetable = new LoaiPhongPhongTrangThaiPhong();
 
         [HttpGet]
-        [HttpPost]
-        public IActionResult Index(string loaiphong = null, string trangthaiphong = null, bool error = true)
+        public async Task<IActionResult> Index(
+            string loaiphong = null,
+            DateTime? ngayden = null,
+            DateTime? ngaydi = null,
+            string khachsan = null,
+            bool error = true)
         {
-            if (loaiphong == null && trangthaiphong == null) treetable.phongs = repo.getPhongByLoaiPhong(null);
-            else if (loaiphong == null) treetable.phongs = repo.getPhongByMaTrangThai(trangthaiphong);
-            else if (trangthaiphong == null) treetable.phongs = repo.getPhongByLoaiPhong(loaiphong);
+            treetable.phongs = repo.FilterPhong(
+                loaiphong,
+                ngayden,
+                ngaydi,
+                khachsan
+            );
 
-            treetable.trangthaiphongs = repo.getTrangThaiPhong;
             treetable.loaiphongs = repo.getLoaiPhong;
-            treetable.dichvus = repo.getDichvu;
+            treetable.dichvus = repo.getDichVus;
+            treetable.khachSans = await repo.getListKhachSan();
             treetable.error = error;
+
             if (accessor.HttpContext.Session.GetString("UserName") != null)
-            {
-                treetable.Person = repo.getPersonByUserName(accessor.HttpContext.Session.GetString("UserName"));
-            }
+                treetable.Person = repo.getPersonByUserName(
+                    accessor.HttpContext.Session.GetString("UserName"));
+
             return View(treetable);
         }
 
+
         public IActionResult ChiTietPhong(string maphong)
         {
+            var dichvus = repo.getDichVus.ToList();
+
+            ViewData["DichVus"] = dichvus;
             var phong = repo.getChiTietPhong(maphong);
             return View(phong);
         }
 
         [HttpPost]
         [Authentication]
-        public IActionResult AddReview(ReviewPhong review)
+        public IActionResult AddReview(ReviewKhachSan review)
         {
             repo.AddReview(review);
             return RedirectToAction("ChiTietPhong", new { id = review.MaPhong });
         }
 
+        [HttpPost]
+        public async Task<IActionResult> DatPhong(
+            string MaPhong,
+            DateTime NgayDen,
+            DateTime NgayDi,
+            int trangThaiThanhToan,
+            List<string> DichVuIds)
+        {
+            var userName = accessor.HttpContext.Session.GetString("UserName");
+            if (string.IsNullOrEmpty(userName))
+                return RedirectToAction("Login", "Account");
+
+            var person = repo.getPersonByUserName(userName);
+            var phong = repo.getPhongByMaPhong(MaPhong);
+
+            int soNgay = (NgayDi - NgayDen).Days;
+            decimal tongTien = soNgay * phong.Gia;
+
+            if (DichVuIds != null && DichVuIds.Any())
+            { 
+                var dichvus = await repo.getDichVuByIds(DichVuIds);
+                tongTien += dichvus.Sum(d => d.GiaDichVu);
+            }
+
+            if (trangThaiThanhToan == 1)
+            {
+                var vnPayModel = new VnPaymentRequestModel
+                {
+                    Amount = (long)tongTien,
+                    CreatedDate = DateTime.Now,
+                    Description = $"{person.HoTen} {person.Sdt}",
+                    FullName = person.HoTen,
+                    OrderId = new Random().Next(100000, 999999)
+                };
+                return Redirect(_vnPayservice.CreatePaymentUrl(HttpContext, vnPayModel));
+            }
+
+            string maOrder = repo.createOrderPhongId();
+            repo.addOrderPhong(new OrderPhong
+            {
+                MaOrderPhong = maOrder,
+                NgayDen = NgayDen,
+                NgayDi = NgayDi,
+                PersonId = person.PersonId,
+                MaPhong = MaPhong,
+                TrangThaiThanhToan = 0
+            });
+            if (DichVuIds != null && DichVuIds.Any())
+            {
+                var dichVus = await repo.getDichVuByIds(DichVuIds);
+
+                var orderDichVus = dichVus.Select(dv => new OrderPhongDichVu
+                {
+                    MaOrderPhong = maOrder,
+                    MaDichVu = dv.MaDichVu,
+                    SoLuong = 1,
+                    DonGia = dv.GiaDichVu
+                }).ToList();
+
+                repo.addOrderPhongDichVu(orderDichVus);
+            }
+
+            repo.updateTrangThaiPhong(MaPhong, "MTT3");
+            return RedirectToAction("Index", "Room");
+        }
+
+
         [Authentication]
         public IActionResult datPhongVaDichVu(string hoten, int tuoi, int gioitinh, string cccd, string sdt, DateTime? ngayden, DateTime? ngaydi, string maphong, string selectedServiceIds, string servicePrice,
             string selectedQuantities, int trangThaiThanhToan, double tongTien)
         {
-            if(trangThaiThanhToan == 1)
+            if (trangThaiThanhToan == 1)
             {
                 var vnPayModel = new VnPaymentRequestModel
                 {
@@ -110,7 +190,7 @@ namespace HotelManagement.Controllers
             {
                 var madichvu = selectedServiceIds.Split(',').ToList();
                 var soLuongMoiDichVu = selectedQuantities.Split(',').Select(int.Parse).ToList();
-                var giaMoiDichVu = servicePrice.Split(',').Select(float.Parse).ToList();
+                var giaMoiDichVu = servicePrice.Split(',').Select(decimal.Parse).ToList();
 
                 var orderphongdichvu = new List<OrderPhongDichVu>();
                 for (int i = 0; i < madichvu.Count; i++)
@@ -190,8 +270,8 @@ namespace HotelManagement.Controllers
         }
         public IEnumerable<LoaiPhong> loaiphongs { get; set; }
         public IEnumerable<Phong> phongs { get; set; }
-        public IEnumerable<TrangThaiPhong> trangthaiphongs { get; set; }
         public IEnumerable<DichVu> dichvus { get; set; }
+        public List<KhachSan> khachSans { get; set; }
         public Person Person { get; set; } = null;
         public bool error { get; set; } = true;
     }

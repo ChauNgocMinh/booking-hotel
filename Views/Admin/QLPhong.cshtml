@@ -33,7 +33,6 @@
                         <a class="list-group-item list-group-item-action" href="/admin/QLPhong/@p.MaLoaiPhong">
                             <div class="d-flex justify-content-between">
                                 <div>@p.TenLoaiPhong</div>
-                                <small class="text-muted">@string.Format("{0:N0}", p.GiaPhong)</small>
                             </div>
                             <small class="text-muted">Mã: @p.MaLoaiPhong</small>
                         </a>
@@ -67,8 +66,7 @@
                                         <td class="align-middle" style="min-width:220px;">
                                             <textarea class="form-control form-control-sm" rows="2" readonly>@p.MoTaPhong</textarea>
                                         </td>
-                                        <td class="align-middle">@String.Format("{0:N0}", p.MaLoaiPhongNavigation.GiaPhong)</td>
-                                        <td class="align-middle">@p.MaTrangThaiNavigation.TenTrangThai</td>
+                                        <td class="align-middle">@String.Format("{0:N0}", p.Gia)</td>
                                         <td class="align-middle text-center" style="width:220px;">
                                             <div class="btn-group" role="group">
                                                 <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalEditRoom_@p.MaPhong">
@@ -104,19 +102,7 @@
                                                                     @foreach (var lp in Model.lp)
                                                                     {
                                                                         <option value="@lp.MaLoaiPhong" selected="@(Equals(lp.MaLoaiPhong, p.MaLoaiPhong) ? "selected" : null)">
-                                                                            @lp.TenLoaiPhong - @string.Format("{0:N0}", lp.GiaPhong)
-                                                                        </option>
-                                                                    }
-                                                                </select>
-                                                            </div>
-
-                                                            <div class="col-md-6">
-                                                                <label class="form-label">Trạng thái</label>
-                                                                <select class="form-select" name="matrangthai" required>
-                                                                    @foreach (var tt in Model.ttp)
-                                                                    {
-                                                                        <option value="@tt.MaTrangThai" selected="@(Equals(tt.MaTrangThai, p.MaTrangThai) ? "selected" : null)">
-                                                                            @tt.TenTrangThai
+                                                                            @lp.TenLoaiPhong
                                                                         </option>
                                                                     }
                                                                 </select>
@@ -209,18 +195,7 @@
                                 <option disabled selected value="">-- Chọn loại phòng --</option>
                                 @foreach (var loaiphong in Model.lp)
                                 {
-                                    <option value="@loaiphong.MaLoaiPhong">@loaiphong.TenLoaiPhong - @string.Format("{0:N0}", loaiphong.GiaPhong)</option>
-                                }
-                            </select>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label">Trạng thái</label>
-                            <select class="form-select" name="matrangthai" required>
-                                <option disabled selected value="">-- Chọn trạng thái --</option>
-                                @foreach (var trangthai in Model.ttp)
-                                {
-                                    <option value="@trangthai.MaTrangThai">@trangthai.TenTrangThai</option>
+                                    <option value="@loaiphong.MaLoaiPhong">@loaiphong.TenLoaiPhong</option>
                                 }
                             </select>
                         </div>

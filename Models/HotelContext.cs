@@ -27,10 +27,10 @@ namespace HotelManagement.Models
         public virtual DbSet<OrderPhongDichVu> OrderPhongDichVus { get; set; } = null!;
         public virtual DbSet<Person> People { get; set; } = null!;
         public virtual DbSet<Phong> Phongs { get; set; } = null!;
+        public virtual DbSet<KhachSan> KhachSans { get; set; } = null!;
         public virtual DbSet<TaiKhoan> TaiKhoans { get; set; } = null!;
-        public virtual DbSet<TrangThaiPhong> TrangThaiPhongs { get; set; } = null!;
         public virtual DbSet<VaiTro> VaiTros { get; set; } = null!;
-        public virtual DbSet<ReviewPhong> ReviewPhongs { get; set; } = null!;
+        public virtual DbSet<ReviewKhachSan> ReviewKhachSans { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -246,30 +246,49 @@ namespace HotelManagement.Models
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FKPhong134689");
 
-                entity.HasOne(d => d.MaTrangThaiNavigation)
+                entity.HasOne(d => d.KhachSan)
                     .WithMany(p => p.Phongs)
-                    .HasForeignKey(d => d.MaTrangThai)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FKPhong128242");
+                    .HasForeignKey(d => d.MaKhachSan)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
 
-                entity.HasMany(p => p.ReviewPhongs)
-                  .WithOne(r => r.Phong)
+            modelBuilder.Entity<KhachSan>(entity =>
+            {
+                entity.HasKey(e => e.MaKhachSan);
+
+                entity.ToTable("KhachSan");
+
+                entity.Property(e => e.MaKhachSan)
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.TenKhachSan)
+                    .HasMaxLength(255)
+                    .IsRequired();
+
+                entity.Property(e => e.SoDienThoai)
+                    .HasMaxLength(20);
+
+                entity.Property(e => e.Email)
+                    .HasMaxLength(255);
+
+                entity.HasMany(p => p.ReviewKhachSans)
+                  .WithOne(r => r.KhachSan)
                   .HasForeignKey(r => r.MaPhong);
             });
 
-            modelBuilder.Entity<ReviewPhong>(entity =>
+            modelBuilder.Entity<ReviewKhachSan>(entity =>
             {
                 entity.HasKey(e => e.Id);
 
-                entity.ToTable("ReviewPhong");
+                entity.ToTable("ReviewKhachSan");
 
                 entity.Property(e => e.Comment).HasMaxLength(500);
 
                 entity.Property(e => e.PersonId).HasMaxLength(255);
                 entity.Property(e => e.MaPhong).HasMaxLength(255);
 
-                entity.HasOne(e => e.Phong)
-                      .WithMany(p => p.ReviewPhongs)
+                entity.HasOne(e => e.KhachSan)
+                      .WithMany(p => p.ReviewKhachSans)
                       .HasForeignKey(e => e.MaPhong)
                       .OnDelete(DeleteBehavior.Cascade);
 
@@ -309,18 +328,6 @@ namespace HotelManagement.Models
                     .HasForeignKey(d => d.PersonId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FKTai_Khoan172310");
-            });
-
-            modelBuilder.Entity<TrangThaiPhong>(entity =>
-            {
-                entity.HasKey(e => e.MaTrangThai)
-                    .HasName("PK__Trang_Th__AADE41383344BB34");
-
-                entity.ToTable("Trang_Thai_Phong");
-
-                entity.Property(e => e.MaTrangThai).HasMaxLength(255);
-
-                entity.Property(e => e.TenTrangThai).HasMaxLength(255);
             });
 
             modelBuilder.Entity<VaiTro>(entity =>

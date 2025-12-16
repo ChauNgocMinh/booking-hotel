@@ -46,13 +46,11 @@ namespace HotelManagement
             app.UseAuthentication();
             app.UseAuthorization();
 
-
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller}/{action}/{id?}",
                 defaults: new {controller= "Home",action = "Index"});
 
-           
             app.Run();
         }
     }
