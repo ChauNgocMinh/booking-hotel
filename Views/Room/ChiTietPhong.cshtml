@@ -1,0 +1,99 @@
+﻿@model Phong
+
+@{
+    var dichvus = ViewData["DichVus"] as List<DichVu>;
+    var bookedRanges = Model.OrderPhongs
+        .Where(o => o.NgayDen.HasValue && o.NgayDi.HasValue)
+        .Select(o => new
+        {
+            start = o.NgayDen!.Value.ToString("yyyy-MM-dd"),
+            end = o.NgayDi!.Value.ToString("yyyy-MM-dd")
+        })
+        .ToList();
+}
+
+<form asp-action="DatPhong" method="post">
+    <input type="hidden" name="MaPhong" value="@Model.MaPhong" />
+    <input type="hidden" name="NgayDen" id="NgayDen" />
+    <input type="hidden" name="NgayDi" id="NgayDi" />
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-5">
+                <img src="@Model.Anh" class="img-fluid rounded shadow" />
+            </div>
+
+            <div class="col-md-7">
+                <h2>@Model.TenPhong</h2>
+                <p class="text-muted">@Model.MaLoaiPhongNavigation.TenLoaiPhong</p>
+
+                <h4 class="text-danger fw-bold">
+                    Giá: @String.Format("{0:N0}", Model.Gia) VND
+                </h4>
+
+                <div class="mt-3">
+                    <label class="fw-bold">Chọn ngày thuê</label>
+                    <input type="text" id="dateRange" class="form-control" readonly required />
+                </div>
+
+                <h5 class="fw-bold mt-3">Dịch vụ kèm theo</h5>
+                @foreach (var dv in dichvus!)
+                {
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="DichVuIds"
+                               value="@dv.MaDichVu" />
+                        <label class="form-check-label">
+                            @dv.TenDichVu (@String.Format("{0:N0}", dv.GiaDichVu))
+                        </label>
+                    </div>
+                }
+
+                <div class="mt-3">
+                    <select class="form-select" name="trangThaiThanhToan">z
+                        <option value="0">Thanh toán tại khách sạn</option>
+                        <option value="1">Thanh toán Paypal</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-4 w-100">
+                    Đặt phòng
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+    <script>
+        const bookedRanges = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(bookedRanges));
+
+        function isBooked(date) {
+            return bookedRanges.some(b =>
+                date.isSameOrAfter(moment(b.start)) &&
+                date.isBefore(moment(b.end))
+            );
+        }
+
+        $('#dateRange').daterangepicker({
+            autoUpdateInput: false,
+            minDate: moment(),
+            isInvalidDate: isBooked
+        });
+
+        $('#dateRange').on('apply.daterangepicker', function (ev, picker) {
+            $('#NgayDen').val(picker.startDate.format('YYYY-MM-DD'));
+            $('#NgayDi').val(picker.endDate.format('YYYY-MM-DD'));
+            $(this).val(
+                picker.startDate.format('DD/MM/YYYY') +
+                ' - ' +
+                picker.endDate.format('DD/MM/YYYY')
+            );
+        });
+    </script>
+}
