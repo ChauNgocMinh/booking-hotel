@@ -57,7 +57,7 @@
                                     <th>Mã phòng</th>
                                     <th>Ảnh</th>
                                     <th>Tên phòng</th>
-                                    <th>Mô tả</th>
+                                    @* <th>Mô tả</th> *@
                                     <th>Giá</th>
 
                                     <th class="text-center">Hành động</th>
@@ -79,12 +79,12 @@
                                         </td>
 
                                         <td>@p.TenPhong</td>
-
+@* 
                                         <td>
                                             <textarea class="form-control form-control-sm" rows="2" readonly>
 @p.MoTaPhong
             </textarea>
-                                        </td>
+                                        </td> *@
 
                                         <td>@String.Format("{0:N0}", p.Gia)</td>
 
@@ -297,51 +297,10 @@
     })();
 </script>
 <script>
-    document.getElementById('modalPhong').addEventListener('show.bs.modal', function (event) {
-        const button = event.relatedTarget;
-        const mode = button.getAttribute('data-mode');
+ 
+    
 
-        const form = document.getElementById('formPhong');
-        const title = document.getElementById('modalTitle');
-        const submit = document.getElementById('btnSubmit');
-
-        if (mode === 'add') {
-            title.innerText = '➕ Thêm phòng mới';
-            submit.innerText = 'Thêm phòng';
-            form.action = '/Admin/themPhong';
-
-            form.reset();
-            document.getElementById('maphong').value = '';
-            document.getElementById('makhachsan').value = '';
-
-        } else {
-            title.innerText = '✏️ Sửa phòng';
-            submit.innerText = 'Lưu thay đổi';
-            form.action = '/Admin/suaPhong';
-
-            document.getElementById('maphong').value = button.dataset.maphong;
-            document.getElementById('makhachsan').value = button.dataset.makhachsan;
-            document.getElementById('tenphong').value = button.dataset.tenphong;
-            document.getElementById('maloaiphong').value = button.dataset.maloaiphong;
-            document.getElementById('gia').value = button.dataset.gia;
-            document.getElementById('matrangthai').value = button.dataset.matrangthai;
-            document.getElementById('anh').value = button.dataset.anh;
-            document.getElementById('motaphong').value = button.dataset.motaphong;
-        }
-    });
-
-      document.getElementById('modalConfirmDelete')
-        .addEventListener('show.bs.modal', function (event) {
-
-            const button = event.relatedTarget;
-            const maPhong = button.getAttribute('data-maphong');
-
-            document.getElementById('deleteMaPhong').innerText = maPhong;
-            document.getElementById('btnConfirmDelete').href =
-                '/Admin/phong/xoaPhong/' + maPhong;
-        });
-
-            document.getElementById('imageFile').addEventListener('change', e => {
+        document.getElementById('imageFile').addEventListener('change', e => {
         const img = document.getElementById('previewImg');
         if (e.target.files.length > 0) {
             img.src = URL.createObjectURL(e.target.files[0]);
@@ -349,24 +308,82 @@
         }
     });
 
+
+</script>
+<script>
     document.getElementById('modalPhong')
         .addEventListener('show.bs.modal', function (event) {
 
-        const btn = event.relatedTarget;
-        const mode = btn.dataset.mode;
+            const btn = event.relatedTarget;
+            const mode = btn.dataset.mode;
 
-        if (mode === 'edit') {
-            const anh = btn.dataset.anh;
-            document.getElementById('anhCu').value = anh;
+            const form = document.getElementById('formPhong');
+            const title = document.getElementById('modalTitle');
+            const submit = document.getElementById('btnSubmit');
+            const previewImg = document.getElementById('previewImg');
 
-            if (anh) {
-                const img = document.getElementById('previewImg');
-                img.src = anh;
-                img.style.display = 'block';
+            if (mode === 'add') {
+                title.innerText = '➕ Thêm phòng mới';
+                submit.innerText = 'Thêm phòng';
+                form.action = '/Admin/themPhong';
+                form.reset();
+
+                previewImg.style.display = 'none';
+                document.getElementById('anhCu').value = '';
+
+                if (moTaEditor) moTaEditor.setData('');
+
+            } else {
+                title.innerText = '✏️ Sửa phòng';
+                submit.innerText = 'Lưu thay đổi';
+                form.action = '/Admin/suaPhong';
+
+                document.getElementById('maphong').value = btn.dataset.maphong;
+                document.getElementById('makhachsan').value = btn.dataset.makhachsan;
+                document.getElementById('tenphong').value = btn.dataset.tenphong;
+                document.getElementById('maloaiphong').value = btn.dataset.maloaiphong;
+                document.getElementById('gia').value = btn.dataset.gia;
+                document.getElementById('matrangthai').value = btn.dataset.matrangthai;
+
+                document.getElementById('anhCu').value = btn.dataset.anh || '';
+
+                if (btn.dataset.anh) {
+                    previewImg.src = btn.dataset.anh;
+                    previewImg.style.display = 'block';
+                } else {
+                    previewImg.style.display = 'none';
+                }
+
+                if (moTaEditor)
+                    moTaEditor.setData(btn.dataset.motaphong || '');
             }
-        } else {
-            document.getElementById('previewImg').style.display = 'none';
-            document.getElementById('anhCu').value = '';
-        }
-    });
+        });
 </script>
+
+<script>
+    let moTaEditor;
+
+    ClassicEditor
+        .create(document.querySelector('#motaphong'), {
+            placeholder: 'Nhập mô tả phòng (có thể in đậm, nghiêng, danh sách, v.v...)',
+            toolbar: [
+                'heading', '|',
+                'bold', 'italic', 'underline', '|',
+                'bulletedList', 'numberedList', '|',
+                'link', '|',
+                'undo', 'redo'
+            ]
+        })
+        .then(editor => {
+            moTaEditor = editor;
+
+            // ✅ SYNC CKEDITOR TRƯỚC KHI SUBMIT
+            document.getElementById('formPhong')
+                .addEventListener('submit', function () {
+                    document.getElementById('motaphong').value =
+                        moTaEditor.getData();
+                });
+        })
+        .catch(error => console.error(error));
+</script>
+

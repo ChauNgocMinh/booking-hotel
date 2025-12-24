@@ -24,15 +24,44 @@ namespace HotelManagement.Controllers
 
         LoaiPhongPhongTrangThaiPhong treetable = new LoaiPhongPhongTrangThaiPhong();
 
+        //[HttpGet]
+        //public async Task<IActionResult> Index(
+        //    string loaiphong = null,
+        //    DateTime? ngayden = null,
+        //    DateTime? ngaydi = null,
+        //    string khachsan = null,
+        //    bool error = true)
+        //{
+        //    treetable.phongs = repo.FilterPhong(
+        //        loaiphong,
+        //        ngayden,
+        //        ngaydi,
+        //        khachsan
+        //    );
+
+        //    treetable.loaiphongs = repo.getLoaiPhong;
+        //    treetable.dichvus = repo.getDichVus;
+        //    treetable.khachSans = await repo.getListKhachSan();
+        //    treetable.error = error;
+
+        //    if (accessor.HttpContext.Session.GetString("UserName") != null)
+        //        treetable.Person = repo.getPersonByUserName(
+        //            accessor.HttpContext.Session.GetString("UserName"));
+
+        //    return View(treetable);
+        //}
+
         [HttpGet]
         public async Task<IActionResult> Index(
-            string loaiphong = null,
-            DateTime? ngayden = null,
-            DateTime? ngaydi = null,
-            string khachsan = null,
-            bool error = true)
+    string searchPhong = null,
+    string loaiphong = null,
+    DateTime? ngayden = null,
+    DateTime? ngaydi = null,
+    string khachsan = null,
+    bool error = true)
         {
             treetable.phongs = repo.FilterPhong(
+                searchPhong,
                 loaiphong,
                 ngayden,
                 ngaydi,
@@ -50,7 +79,6 @@ namespace HotelManagement.Controllers
 
             return View(treetable);
         }
-
 
         public IActionResult ChiTietPhong(string maphong)
         {

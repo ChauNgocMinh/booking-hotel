@@ -21,10 +21,17 @@ namespace HotelManagement.DataAccess
         IEnumerable<Phong> getPhongByLoaiPhong(string id);
 
         Phong getChiTietPhong(string id);
-        IEnumerable<Phong> FilterPhong(string loaiphong,
-            DateTime? ngayden,
-            DateTime? ngaydi,
-            string khachsan);
+        //IEnumerable<Phong> FilterPhong(string loaiphong,
+        //    DateTime? ngayden,
+        //    DateTime? ngaydi,
+        //    string khachsan);
+        IEnumerable<Phong> FilterPhong(
+                string searchPhong,
+                string loaiphong,
+                DateTime? ngayden,
+                DateTime? ngaydi,
+                string khachsan);
+
 
         void AddReview(ReviewKhachSan model);
 
@@ -71,10 +78,10 @@ namespace HotelManagement.DataAccess
         bool addHoaDon(HoaDon hoaDon);
 
         Person getPersonByUserName(string username);
-    
+
         public IEnumerable<OrderPhong> getOrderPhongByPerson(string personid);
 
-        public int funcGetLastIndex(List<string> maid,int vt);
+        public int funcGetLastIndex(List<string> maid, int vt);
 
         public void removeOrderPhong(string maorder);
 
@@ -94,7 +101,7 @@ namespace HotelManagement.DataAccess
 
         public void removeKhachHang(string makhachhang);
 
-        IEnumerable<LoaiTaiKhoan> getLoaiTaiKhoan {  get; }
+        IEnumerable<LoaiTaiKhoan> getLoaiTaiKhoan { get; }
 
         IEnumerable<TaiKhoan> getTaiKhoan { get; }
 
@@ -108,7 +115,7 @@ namespace HotelManagement.DataAccess
 
 
         bool checkTonTaiMaNhanVien(string manhanvien);
-        
+
         bool addNhanVien(NhanVien nhanvien);
 
         bool addTaiKhoanNhanVien(TaiKhoan taiKhoan);
@@ -125,7 +132,7 @@ namespace HotelManagement.DataAccess
 
         bool themDichVu(DichVu dichvu);
 
-        void updateThongTinNhanVien(Person nhanvien,NhanVien vaitro);
+        void updateThongTinNhanVien(Person nhanvien, NhanVien vaitro);
 
         void updateLoaiTaiKhoanOfPerson(string personID, string loaitaikhoan);
 
@@ -133,7 +140,7 @@ namespace HotelManagement.DataAccess
 
         void updateLoaiTaiKhoan(LoaiTaiKhoan loaitaikhoancansua);
 
-        bool updateTaiKhoan(string mataikhoan,string username, string password);
+        bool updateTaiKhoan(string mataikhoan, string username, string password);
         IEnumerable<OrderPhong> getOrderPhong();
         void updateOrderPhong(OrderPhong order);
         TaiKhoan GetAccountByUserName(string username);

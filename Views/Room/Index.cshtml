@@ -15,6 +15,16 @@
         <!-- Sidebar Filter -->
         <div class="col-md-3 mb-4">
             <form asp-action="Index" method="get" class="border p-3 rounded">
+                <div class="mb-3">
+                    <label class="form-label">Tên phòng</label>
+                    <input type="text"
+                           class="form-control"
+                           name="searchPhong"
+                           placeholder="Nhập tên phòng..."
+                           value="@Context.Request.Query["searchPhong"]" />
+
+                </div>
+
                 <div class="mb-2">
                     <label class="form-label">Khách sạn</label>
                     <select name="khachsan" class="form-select">

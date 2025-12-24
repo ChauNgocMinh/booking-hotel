@@ -574,13 +574,46 @@ namespace HotelManagement.DataAccess
             return await context.KhachSans.Include(x => x.ReviewKhachSans).ThenInclude(x => x.Person).FirstOrDefaultAsync(x => x.MaKhachSan == id);
         }
 
+        //public IEnumerable<Phong> FilterPhong(
+        //    string loaiphong,
+        //    DateTime? ngayden,
+        //    DateTime? ngaydi,
+        //    string khachsan)
+        //{
+        //    var query = context.Phongs.AsQueryable();
+
+        //    if (!string.IsNullOrEmpty(loaiphong))
+        //        query = query.Where(p => p.MaLoaiPhong == loaiphong);
+
+        //    if (!string.IsNullOrEmpty(khachsan))
+        //        query = query.Where(p => p.MaKhachSan == khachsan);
+
+        //    if (ngayden.HasValue && ngaydi.HasValue)
+        //        query = query.Where(p =>
+        //            !p.OrderPhongs.Any(o =>
+        //                o.NgayDen < ngaydi &&
+        //                o.NgayDi > ngayden));
+
+        //    return query
+        //        .Include(p => p.OrderPhongs.Where(o => o.TrangThaiThanhToan == 0))
+        //            .ThenInclude(o => o.Person)
+        //        .Include(p => p.OrderPhongs.Where(o => o.TrangThaiThanhToan == 0))
+        //            .ThenInclude(o => o.OrderPhongDichVus)
+        //                .ThenInclude(od => od.MaDichVuNavigation);
+        //}
         public IEnumerable<Phong> FilterPhong(
-            string loaiphong,
-            DateTime? ngayden,
-            DateTime? ngaydi,
-            string khachsan)
+    string searchPhong,
+    string loaiphong,
+    DateTime? ngayden,
+    DateTime? ngaydi,
+    string khachsan)
         {
             var query = context.Phongs.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchPhong))
+            {
+                query = query.Where(p => p.TenPhong.ToLower().Contains(searchPhong.ToLower()));
+            }
 
             if (!string.IsNullOrEmpty(loaiphong))
                 query = query.Where(p => p.MaLoaiPhong == loaiphong);
