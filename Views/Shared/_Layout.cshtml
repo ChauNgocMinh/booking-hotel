@@ -17,14 +17,124 @@
     <link rel="stylesheet" href="~/css/jquery.timepicker.css" />
     <link rel="stylesheet" href="~/css/flaticon.css" />
     <link rel="stylesheet" href="~/css/icomoon.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
 
     <!-- Your site CSS (override vendor if cần) -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HotelManagement.styles.css" asp-append-version="true" />
 </head>
+<style>
+    #chat-bubble {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 56px;
+        height: 56px;
+        background: #0d6efd;
+        color: white;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 56px;
+        font-size: 24px;
+        cursor: pointer;
+        z-index: 9999;
+    }
+
+    #chat-box {
+        position: fixed;
+        bottom: 90px;
+        right: 20px;
+        width: 320px;
+        height: 420px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0,0,0,.2);
+        display: flex;
+        flex-direction: column;
+        z-index: 9999;
+    }
+
+    #chat-header {
+        padding: 10px;
+        background: #0d6efd;
+        color: white;
+        font-weight: bold;
+    }
+
+    #chat-messages {
+        flex: 1;
+        padding: 10px;
+        overflow-y: auto;
+    }
+
+    #chat-input {
+        display: flex;
+        border-top: 1px solid #ddd;
+    }
+
+        #chat-input input {
+            flex: 1;
+            border: none;
+            padding: 10px;
+        }
+
+        #chat-input button {
+            border: none;
+            background: #0d6efd;
+            color: white;
+            padding: 0 15px;
+        }
+
+</style>
 <body>
     @await Html.PartialAsync("header")
+    <div class="hero">
+        <section class="home-slider owl-carousel">
+            <div class="slider-item" style="background-image:url('/images/bg_1.jpg');">
+                <div class="overlay"></div>
+                <div class="container">
+                    <div class="row no-gutters slider-text align-items-center justify-content-end">
+                        <div class="col-md-6 ftco-animate">
+                            <div class="text">
+                                <h3>
+                                    Không chỉ là một khách sạn... mà là một trải nghiệm</h2>
+                                    <h1 class="mb-3">Khách sạn dành cho cả gia đình, quanh năm suốt tháng.</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slider-item" style="background-image:url('/images/bg_2.jpg');">
+                <div class="overlay"></div>
+                <div class="container">
+                    <div class="row no-gutters slider-text align-items-center justify-content-end">
+                        <div class="col-md-6 ftco-animate">
+                            <div class="text">
+                                <h2>Khách sạn &amp; Khu nghỉ dưỡng Harbor Lights</h2>
+                                <h1 class="mb-3">Cảm giác như đang ở chính ngôi nhà của bạn.</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="chat-bubble">💬</div>
+
+    <div id="chat-box" class="d-none">
+        <div id="chat-header">Hỗ trợ AI</div>
+        <div id="chat-messages"></div>
+
+        <div id="chat-input">
+            <input type="text" id="userMessage" placeholder="Nhập câu hỏi..." />
+            <button onclick="sendMessage()">Gửi</button>
+        </div>
+    </div>
+
     @RenderBody()
+    @await Html.PartialAsync("footer")
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Các file JS bổ sung từ template Colorlib -->
@@ -47,6 +157,7 @@
 
     <script src="~/js/google-map.js"></script>
     <script src="~/js/site.js"></script>
-
+    @RenderSection("Scripts", required: false)
 </body>
 </html>
+

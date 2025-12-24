@@ -34,6 +34,7 @@ namespace HotelManagement.Controllers
 
             if (check != null)
             {
+                httpContextAccessor.HttpContext.Session.SetString("admin", account.UserName);
                 switch (check.LoaiTaiKhoan)
                 {
                     case "LTK1":

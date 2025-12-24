@@ -27,9 +27,11 @@ namespace HotelManagement.Models
         public virtual DbSet<OrderPhongDichVu> OrderPhongDichVus { get; set; } = null!;
         public virtual DbSet<Person> People { get; set; } = null!;
         public virtual DbSet<Phong> Phongs { get; set; } = null!;
+        public virtual DbSet<KhachSan> KhachSans { get; set; } = null!;
         public virtual DbSet<TaiKhoan> TaiKhoans { get; set; } = null!;
-        public virtual DbSet<TrangThaiPhong> TrangThaiPhongs { get; set; } = null!;
         public virtual DbSet<VaiTro> VaiTros { get; set; } = null!;
+        public virtual DbSet<ReviewKhachSan> ReviewKhachSans { get; set; } = null!;
+        public virtual DbSet<BaiViet> BaiViets { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -89,7 +91,7 @@ namespace HotelManagement.Models
             });
 
 
-           
+
 
             modelBuilder.Entity<LoaiPhong>(entity =>
             {
@@ -245,11 +247,56 @@ namespace HotelManagement.Models
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FKPhong134689");
 
-                entity.HasOne(d => d.MaTrangThaiNavigation)
+                entity.HasOne(d => d.KhachSan)
                     .WithMany(p => p.Phongs)
-                    .HasForeignKey(d => d.MaTrangThai)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FKPhong128242");
+                    .HasForeignKey(d => d.MaKhachSan)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<KhachSan>(entity =>
+            {
+                entity.HasKey(e => e.MaKhachSan);
+
+                entity.ToTable("KhachSan");
+
+                entity.Property(e => e.MaKhachSan)
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.TenKhachSan)
+                    .HasMaxLength(255)
+                    .IsRequired();
+
+                entity.Property(e => e.SoDienThoai)
+                    .HasMaxLength(20);
+
+                entity.Property(e => e.Email)
+                    .HasMaxLength(255);
+
+                entity.HasMany(p => p.ReviewKhachSans)
+                  .WithOne(r => r.KhachSan)
+                  .HasForeignKey(r => r.MaKhachSan);
+            });
+
+            modelBuilder.Entity<ReviewKhachSan>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.ToTable("ReviewKhachSan");
+
+                entity.Property(e => e.Comment).HasMaxLength(500);
+
+                entity.Property(e => e.PersonId).HasMaxLength(255);
+                entity.Property(e => e.MaKhachSan).HasMaxLength(255);
+
+                entity.HasOne(e => e.KhachSan)
+                      .WithMany(p => p.ReviewKhachSans)
+                      .HasForeignKey(e => e.MaKhachSan)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.Person)
+                      .WithMany()
+                      .HasForeignKey(e => e.PersonId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<TaiKhoan>(entity =>
@@ -284,18 +331,6 @@ namespace HotelManagement.Models
                     .HasConstraintName("FKTai_Khoan172310");
             });
 
-            modelBuilder.Entity<TrangThaiPhong>(entity =>
-            {
-                entity.HasKey(e => e.MaTrangThai)
-                    .HasName("PK__Trang_Th__AADE41383344BB34");
-
-                entity.ToTable("Trang_Thai_Phong");
-
-                entity.Property(e => e.MaTrangThai).HasMaxLength(255);
-
-                entity.Property(e => e.TenTrangThai).HasMaxLength(255);
-            });
-
             modelBuilder.Entity<VaiTro>(entity =>
             {
                 entity.HasKey(e => e.MaVaiTro)
@@ -307,6 +342,30 @@ namespace HotelManagement.Models
 
                 entity.Property(e => e.TenVaiTro).HasMaxLength(255);
             });
+
+            modelBuilder.Entity<BaiViet>(entity =>
+            {
+                entity.HasKey(e => e.MaBaiViet)
+                      .HasName("PK__BaiViet");
+
+                entity.ToTable("BaiViet");
+
+                entity.Property(e => e.MaBaiViet)
+                      .HasMaxLength(50)
+                      .IsRequired();
+
+                entity.Property(e => e.TieuDe)
+                      .HasMaxLength(255)
+                      .IsRequired();
+
+                entity.Property(e => e.AnhBia)
+                      .HasMaxLength(500);
+
+                entity.Property(e => e.CreateDate)
+                      .HasColumnType("datetime")
+                      .HasDefaultValueSql("GETDATE()");
+            });
+
 
             OnModelCreatingPartial(modelBuilder);
         }

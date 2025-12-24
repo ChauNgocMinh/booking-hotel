@@ -21,7 +21,7 @@
                 var order = Model?.MaOrderPhongNavigation;
                 var phong = order?.MaPhongNavigation;
                 var loaiphong = phong?.MaLoaiPhongNavigation;
-                decimal giaPhong = loaiphong != null ? Convert.ToDecimal(loaiphong.GiaPhong) : 0m;
+                decimal giaPhong = phong != null ? Convert.ToDecimal(phong.Gia) : 0m;
                 string tenPhong = phong?.TenPhong ?? "—";
                 DateTime? ngayDen = order?.NgayDen != null ? (DateTime?)Convert.ToDateTime(order.NgayDen) : null;
                 DateTime? ngayDi = order?.NgayDi != null ? (DateTime?)Convert.ToDateTime(order.NgayDi) : null;
@@ -76,9 +76,9 @@
                                 <dd class="col-sm-6">@ngayDen?.ToString("dd/MM/yyyy")</dd>
 
                                 <dt class="col-sm-6">Ngày đi</dt>
-                                <dd class="col-sm-6">@ngayDi?.ToString("dd/MM/yyyy") ?? "-")</dd>
+                                <dd class="col-sm-6">@ngayDi?.ToString("dd/MM/yyyy")</dd>
 
-                                <dt class="col-sm-6">Số ngày</dt>
+                                <dt class="col-sm-6">Số ngày ở</dt>
                                 <dd class="col-sm-6">@totalDays</dd>
 
                                 <dt class="col-sm-6">Tổng tiền phòng</dt>

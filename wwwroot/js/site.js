@@ -1,4 +1,54 @@
-﻿AOS.init({
+﻿const STORAGE_KEY = "hotel_chat_messages";
+
+document.getElementById("chat-bubble").onclick = function () {
+	document.getElementById("chat-box").classList.toggle("d-none");
+};
+
+// Load chat khi mở trang
+document.addEventListener("DOMContentLoaded", loadMessages);
+
+function loadMessages() {
+	const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+	const box = document.getElementById("chat-messages");
+	box.innerHTML = "";
+	saved.forEach(m => appendMessage(m.sender, m.text, false));
+}
+
+async function sendMessage() {
+	const input = document.getElementById("userMessage");
+	const message = input.value.trim();
+	if (!message) return;
+
+	appendMessage("Bạn", message);
+	saveMessage("Bạn", message);
+	input.value = "";
+
+	const res = await fetch("/Chat/Ask", {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({ message })
+	});
+
+	const data = await res.json();
+	appendMessage("AI", data.reply);
+	saveMessage("AI", data.reply);
+}
+
+function appendMessage(sender, text, scroll = true) {
+	const div = document.createElement("div");
+	div.innerHTML = `<strong>${sender}:</strong> ${text}`;
+	document.getElementById("chat-messages").appendChild(div);
+	if (scroll) div.scrollIntoView({ behavior: "smooth" });
+}
+
+function saveMessage(sender, text) {
+	const messages = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+	messages.push({ sender, text });
+	localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+}
+
+
+AOS.init({
 	duration: 800,
 	easing: 'slide'
 });

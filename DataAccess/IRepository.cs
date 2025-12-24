@@ -4,6 +4,9 @@ namespace HotelManagement.DataAccess
 {
     public interface IRepository
     {
+        Task<List<KhachSan>> getListKhachSan();
+        Task<KhachSan> getKhachSan(string id);
+
         IEnumerable<Person> getPeople { get; }
 
         bool CreateAccount(TaiKhoan a);
@@ -17,13 +20,19 @@ namespace HotelManagement.DataAccess
 
         IEnumerable<Phong> getPhongByLoaiPhong(string id);
 
+        Phong getChiTietPhong(string id);
+        IEnumerable<Phong> FilterPhong(string loaiphong,
+            DateTime? ngayden,
+            DateTime? ngaydi,
+            string khachsan);
+
+        void AddReview(ReviewKhachSan model);
+
         void removeLoaiPhong(string id);
 
         void themLoaiPhong(LoaiPhong newloaiphong);
 
         void suaLoaiPhong(LoaiPhong phongcuasua);
-
-        public IEnumerable<TrangThaiPhong> getTrangThaiPhong { get; }
 
         void themPhong(Phong newphong);
 
@@ -33,7 +42,9 @@ namespace HotelManagement.DataAccess
 
         public IEnumerable<Phong> getPhongByMaTrangThai(string trangthai);
 
-        public IEnumerable<DichVu> getDichvu { get; }
+        public Task<DichVu> getDichvu(string id);
+
+        public Task<List<DichVu>> getDichVuByIds(List<string> ids);
 
         string createOrderPhongId();
 
@@ -52,7 +63,7 @@ namespace HotelManagement.DataAccess
 
         string createHoaDonId();
 
-        void updateTrangThaiOrderPhong(string orderPhongId);
+        void updateTrangThaiOrderPhong(string orderPhongId, string status);
         //0 là chưa thanh toán
         //1 là đã thanh toán
         //2 là phòng đặt trước
@@ -67,11 +78,19 @@ namespace HotelManagement.DataAccess
 
         public void removeOrderPhong(string maorder);
 
-        IEnumerable<HoaDon> GetHoaDon { get; }
+        IQueryable<HoaDon> GetHoaDonQueryable();
 
         IEnumerable<HoaDon> getChiTietHoaDon(string mahoadon);
 
         IEnumerable<KhachHang> getKhachHang { get; }
+
+        IEnumerable<BaiViet> getDanhSachBaiViet { get; }
+        public Task<BaiViet> getBaiViet(string id);
+
+        void updateBaiViet(BaiViet baiViet);
+        void addBaiViet(BaiViet baiViet);
+
+        void removeBaiViet(string maBaiViet);
 
         public void removeKhachHang(string makhachhang);
 
@@ -115,5 +134,9 @@ namespace HotelManagement.DataAccess
         void updateLoaiTaiKhoan(LoaiTaiKhoan loaitaikhoancansua);
 
         bool updateTaiKhoan(string mataikhoan,string username, string password);
+        IEnumerable<OrderPhong> getOrderPhong();
+        void updateOrderPhong(OrderPhong order);
+        TaiKhoan GetAccountByUserName(string username);
+
     }
 }

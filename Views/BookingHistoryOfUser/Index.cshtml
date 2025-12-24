@@ -1,5 +1,7 @@
 ﻿@model IEnumerable<OrderPhong>
-
+@{
+    var dichvus = ViewData["DichVus"] as List<DichVu>;
+}
 <div class="container my-4">
     <div class="card shadow-sm border-0">
         <div class="card-header bg-primary text-white">
@@ -22,7 +24,9 @@
                                 <th>Phòng</th>
                                 <th>Ngày đến</th>
                                 <th>Ngày đi</th>
+                                <th>Thanh toán</th>
                                 <th>Trạng thái</th>
+                                <th>Dịch vụ</th>
                                 <th>Hành động</th>
                             </tr>
                         </thead>
@@ -47,29 +51,75 @@
                                             }
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal@order.MaOrderPhong">
-                                                Hủy
-                                            </button>
-
-                                            <!-- Modal -->
-                                            <div class="modal fade" id="cancelModal@order.MaOrderPhong" tabindex="-1" aria-labelledby="cancelModalLabel@order.MaOrderPhong" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header bg-danger text-white">
-                                                            <h5 class="modal-title" id="cancelModalLabel@order.MaOrderPhong">Xác nhận hủy</h5>
-                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            Bạn có chắc chắn muốn hủy phòng <strong>@order.MaPhongNavigation.TenPhong</strong> từ <strong>@order.NgayDen?.ToString("dd/MM/yyyy")</strong> đến <strong>@order.NgayDi?.ToString("dd/MM/yyyy")</strong>?
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <a class="btn btn-danger" asp-action="removeOrder" asp-route-maorder="@order.MaOrderPhong" asp-route-maphong="@order.MaPhong">Xác nhận</a>
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
+                                            @if (order.TrangThaiDatPhong == "InActive")
+                                            {
+                                                <span class="badge bg-warning text-dark">Đang chờ xác nhận</span>
+                                            }
+                                            else if (order.TrangThaiDatPhong == "Active")
+                                            {
+                                                <span class="badge bg-success">Đã xác nhận</span>
+                                            }
+                                            else if (order.TrangThaiDatPhong == "Cancel")
+                                            {
+                                                <span class="badge bg-secondary">Đã hủy</span>
+                                            }
+                                        </td>
+                                        <td class="text-start">
+                                            @if (order.OrderPhongDichVus != null && order.OrderPhongDichVus.Any())
+                                            {
+                                                <ul class="list-unstyled mb-0">
+                                                    @foreach (var dv in order.OrderPhongDichVus)
+                                                    {
+                                                        <li>
+                                                            • @dv.MaDichVuNavigation.TenDichVu (@dv.SoLuong)
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Không có</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (order.TrangThaiDatPhong == "InActive")
+                                            {
+                                                <form asp-action="HuyPhong" method="post" class="d-inline" onsubmit="return confirm('Xác nhận hủy phòng?');">
+                                                    <input type="hidden" name="id" value="@order.MaOrderPhong" />
+                                                    <button type="submit" class="btn btn-sm btn-danger">
+                                                        Hủy phòng
+                                                    </button>
+                                                </form>
+                                                @if (order.TrangThaiThanhToan == 0)
+                                                {
+                                                    <button type="button"
+                                                            class="btn btn-sm btn-primary"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#dichVuModal"
+                                                            data-orderid="@order.MaOrderPhong"
+                                                            data-dichvus="@string.Join(",", order.OrderPhongDichVus.Select(x => x.MaDichVu))">
+                                                        Đặt thêm dịch vụ
+                                                    </button>
+                                                }
+                                            }
+                                            else if (order.TrangThaiDatPhong == "Active")
+                                            {
+                                                @if (order.TrangThaiThanhToan == 0)
+                                                {
+                                                    <button type="button"
+                                                            class="btn btn-sm btn-primary"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#dichVuModal"
+                                                            data-orderid="@order.MaOrderPhong"
+                                                            data-dichvus="@string.Join(",", order.OrderPhongDichVus.Select(x => x.MaDichVu))">
+                                                        Đặt thêm dịch vụ
+                                                    </button>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">—</span>
+                                            }
                                         </td>
                                     </tr>
                                 }
@@ -81,3 +131,113 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="dichVuModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Đặt thêm dịch vụ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form asp-action="DatThemDichVu" method="post">
+                <input type="hidden" name="orderPhongId" id="orderPhongId" />
+
+                <div class="modal-body p-0">
+                    <table class="table table-bordered table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr class="text-center">
+                                <th style="width:50px">Chọn</th>
+                                <th>Tên dịch vụ</th>
+                                <th style="width:140px">Giá</th>
+                                <th style="width:120px">Số lượng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < dichvus.Count; i++)
+                            {
+                                var dv = dichvus[i];
+                                <tr>
+                                    <td class="text-center">
+                                        <input type="checkbox"
+                                               class="form-check-input dv-check"
+                                               data-index="@i"
+                                               id="dv_@dv.MaDichVu" />
+                                    </td>
+                                    <td>
+                                        <strong>@dv.TenDichVu</strong>
+                                    </td>
+                                    <td class="text-end text-muted">
+                                        @dv.GiaDichVu.ToString("N0") đ
+                                    </td>
+                                    <td>
+                                        <input type="number"
+                                               name="items[@i].SoLuong"
+                                               class="form-control form-control-sm dv-soluong text-center"
+                                               value="1"
+                                               min="1"
+                                               disabled />
+                                    </td>
+
+                                    <input type="hidden"
+                                           name="items[@i].MaDichVu"
+                                           value="@dv.MaDichVu" />
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Xác nhận</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        var modal = document.getElementById('dichVuModal');
+
+        modal.addEventListener('show.bs.modal', function (event) {
+            var btn = event.relatedTarget;
+            var orderId = btn.getAttribute('data-orderid');
+            var daDat = btn.getAttribute('data-dichvus');
+
+            document.getElementById('orderPhongId').value = orderId;
+
+            document.querySelectorAll('.dv-check').forEach(cb => {
+                cb.checked = false;
+                cb.disabled = false;
+            });
+
+            document.querySelectorAll('.dv-soluong').forEach(ip => {
+                ip.disabled = true;
+                ip.value = 1;
+            });
+
+            if (daDat) {
+                daDat.split(',').forEach(id => {
+                    var cb = document.getElementById('dv_' + id);
+                    if (cb) {
+                        cb.checked = true;
+                        cb.disabled = true;
+                        cb.closest('tr')
+                          .querySelector('.dv-soluong').disabled = true;
+                    }
+                });
+            }
+        });
+
+        document.querySelectorAll('.dv-check').forEach(cb => {
+            cb.addEventListener('change', function () {
+                var row = this.closest('tr');
+                row.querySelector('.dv-soluong').disabled = !this.checked;
+            });
+        });
+
+    });
+</script>

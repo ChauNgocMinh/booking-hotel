@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using HotelManagement.Models.Authentication;
-using HotelManagement.DataAccess;
+﻿using HotelManagement.DataAccess;
 using HotelManagement.Models;
+using HotelManagement.Models.Authentication;
+using HotelManagement.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata;
+using System.Threading.Tasks;
 
 namespace HotelManagement.Controllers
 {
@@ -11,190 +13,135 @@ namespace HotelManagement.Controllers
     {
         private IRepository repo;
         IHttpContextAccessor accessor;
-        public RoomController(IRepository repo, IHttpContextAccessor accessor)
+        private readonly PayPalService _payPalService;
+
+        public RoomController(IRepository repo, IHttpContextAccessor accessor, PayPalService payPalService)
         {
             this.repo = repo;
             this.accessor = accessor;
+            _payPalService = payPalService;
         }
 
         LoaiPhongPhongTrangThaiPhong treetable = new LoaiPhongPhongTrangThaiPhong();
 
         [HttpGet]
-        [HttpPost]
-        public IActionResult Index(string loaiphong = null, string trangthaiphong = null, bool error = true)
+        public async Task<IActionResult> Index(
+            string loaiphong = null,
+            DateTime? ngayden = null,
+            DateTime? ngaydi = null,
+            string khachsan = null,
+            bool error = true)
         {
-            if (loaiphong == null && trangthaiphong == null) treetable.phongs = repo.getPhongByLoaiPhong(null);
-            else if (loaiphong == null) treetable.phongs = repo.getPhongByMaTrangThai(trangthaiphong);
-            else if (trangthaiphong == null) treetable.phongs = repo.getPhongByLoaiPhong(loaiphong);
+            treetable.phongs = repo.FilterPhong(
+                loaiphong,
+                ngayden,
+                ngaydi,
+                khachsan
+            );
 
-            treetable.trangthaiphongs = repo.getTrangThaiPhong;
             treetable.loaiphongs = repo.getLoaiPhong;
-            treetable.dichvus = repo.getDichvu;
+            treetable.dichvus = repo.getDichVus;
+            treetable.khachSans = await repo.getListKhachSan();
             treetable.error = error;
+
             if (accessor.HttpContext.Session.GetString("UserName") != null)
-            {
-                treetable.Person = repo.getPersonByUserName(accessor.HttpContext.Session.GetString("UserName"));
-            }
+                treetable.Person = repo.getPersonByUserName(
+                    accessor.HttpContext.Session.GetString("UserName"));
+
             return View(treetable);
         }
 
-        //[Authentication]
-        //public IActionResult datPhongVaDichVu(string hoten,
-        //    int tuoi,
-        //    int gioitinh,
-        //    string cccd,
-        //    string sdt,
-        //    DateTime ngayden,
-        //    DateTime ngaydi,
-        //    string maphong,
-        //    string selectedServiceIds,
-        //    string servicePrice,
-        //    string selectedQuantities)
-        //{
-        //    if (tuoi == 0 && gioitinh == 0 && cccd == null && sdt == null && ngayden == DateTime.MinValue && ngaydi == DateTime.MinValue)
-        //    {
-        //         return RedirectToAction("Index", "Room",new {error = false});
-        //    }
-        //    Person person = new Person();
-        //    if (accessor.HttpContext.Session.GetString("UserName") != null)
-        //    {
-        //        person = repo.getPersonByUserName(accessor.HttpContext.Session.GetString("UserName"));
-        //    }
-        //    else
-        //    {
-        //        person = new Person
-        //        {
-        //            PersonId = cccd,
-        //            HoTen = hoten,
-        //            Tuoi = tuoi,
-        //            GioiTinh = gioitinh,
-        //            Sdt = sdt
-        //        };
-        //    }
 
-        //    string maorderphong = repo.createOrderPhongId();
-        //    OrderPhong orderphong = new OrderPhong
-        //    {
-        //        MaOrderPhong = maorderphong,
-        //        NgayDen = ngayden,
-        //        NgayDi = ngaydi,
-        //        PersonId = cccd,
-        //        MaPhong = maphong,
-        //        Person = person,
-        //        TrangThaiThanhToan = 0,
-        //        MaPhongNavigation = repo.getPhongByMaPhong(maphong)
-        //    };
-
-
-        //    //đầu tiên add order phòng
-        //    repo.addOrderPhong(orderphong);
-
-        //    //tiếp theo add order phòng và danh sách dịch vụ của order phòng đó
-        //    if (selectedServiceIds != null && selectedQuantities != null && servicePrice != null)
-        //    {
-        //        List<string> madichvu = selectedServiceIds.Split(',').ToList();
-        //        List<int> soLuongMoiDichVu = selectedQuantities.Split(",").Select(int.Parse).ToList();
-        //        List<float> giaMoiDichVu = servicePrice.Split(",").Select(float.Parse).ToList();
-
-        //        List<OrderPhongDichVu> orderphongdichvu = new List<OrderPhongDichVu>();
-        //        for (int i = 0; i < madichvu.Count(); i++)
-        //        {
-        //            orderphongdichvu.Add(new OrderPhongDichVu
-        //            {
-        //                MaOrderPhong = maorderphong,
-        //                MaDichVu = madichvu[i],
-        //                SoLuong = soLuongMoiDichVu[i],
-        //                DonGia = giaMoiDichVu[i]
-        //            });
-        //        }
-
-        //        repo.addOrderPhongDichVu(orderphongdichvu);
-        //    }
-
-
-        //    //cuối cùng update trạng thái phòng là đăng thuê
-
-        //    //người đăng kí phòng là user thì mã trạng thái phòng là đặt trước,nếu là admin thì trạng thái đang thuê
-        //    if (accessor.HttpContext.Session.GetString("UserName") != null)
-        //    {
-        //        repo.updateTrangThaiPhong(maphong, "MTT3");
-        //    }
-        //    else repo.updateTrangThaiPhong(maphong, "MTT2");
-
-        //    return RedirectToAction("Index", "Room", new { error = true });
-        //}
-        public IActionResult datPhongVaDichVu(
-        string hoten,
-        int tuoi,
-        int gioitinh,
-        string cccd,
-        string sdt,
-        DateTime? ngayden,
-        DateTime? ngaydi,
-        string maphong,
-        string selectedServiceIds,
-        string servicePrice,
-        string selectedQuantities)
+        public IActionResult ChiTietPhong(string maphong)
         {
-            // Lấy thông tin user từ session
-            var userName = accessor.HttpContext.Session.GetString("UserName");
+            var dichvus = repo.getDichVus.ToList();
 
-            // Nếu chưa đăng nhập -> redirect về trang login
-            if (string.IsNullOrEmpty(userName))
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            if (string.IsNullOrEmpty(hoten) || tuoi <= 0 || gioitinh < 0 || string.IsNullOrEmpty(cccd)
-              || string.IsNullOrEmpty(sdt) || !ngayden.HasValue || !ngaydi.HasValue)
-                    {
-                        return RedirectToAction("Index", "Room", new { error = false });
-                    }
-
-
-            // Lấy thông tin khách hàng từ session
-            Person person = repo.getPersonByUserName(userName);
-
-            string maorderphong = repo.createOrderPhongId();
-            OrderPhong orderphong = new OrderPhong
-            {
-                MaOrderPhong = maorderphong,
-                NgayDen = ngayden,
-                NgayDi = ngaydi,
-                PersonId = person.PersonId,
-                MaPhong = maphong,
-                Person = person,
-                TrangThaiThanhToan = 0,
-                MaPhongNavigation = repo.getPhongByMaPhong(maphong)
-            };
-            repo.addOrderPhong(orderphong);
-
-            // Thêm dịch vụ nếu có
-            if (!string.IsNullOrEmpty(selectedServiceIds)
-                && !string.IsNullOrEmpty(selectedQuantities)
-                && !string.IsNullOrEmpty(servicePrice))
-            {
-                var madichvu = selectedServiceIds.Split(',').ToList();
-                var soLuongMoiDichVu = selectedQuantities.Split(',').Select(int.Parse).ToList();
-                var giaMoiDichVu = servicePrice.Split(',').Select(float.Parse).ToList();
-
-                var orderphongdichvu = new List<OrderPhongDichVu>();
-                for (int i = 0; i < madichvu.Count; i++)
-                {
-                    orderphongdichvu.Add(new OrderPhongDichVu
-                    {
-                        MaOrderPhong = maorderphong,
-                        MaDichVu = madichvu[i],
-                        SoLuong = soLuongMoiDichVu[i],
-                        DonGia = giaMoiDichVu[i]
-                    });
-                }
-                repo.addOrderPhongDichVu(orderphongdichvu);
-            }
-
-            repo.updateTrangThaiPhong(maphong, "MTT3"); // đặt trước
-            return RedirectToAction("Index", "Room", new { error = true });
+            ViewData["DichVus"] = dichvus;
+            var phong = repo.getChiTietPhong(maphong);
+            return View(phong);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> DatPhong(
+            string MaPhong,
+            DateTime NgayDen,
+            DateTime NgayDi,
+            int trangThaiThanhToan,
+            List<string> DichVuIds)
+        {
+            var userName = accessor.HttpContext.Session.GetString("UserName");
+            if (string.IsNullOrEmpty(userName))
+                return RedirectToAction("Login", "Account");
+
+            var person = repo.getPersonByUserName(userName);
+            var phong = repo.getPhongByMaPhong(MaPhong);
+
+            int soNgay = (NgayDi - NgayDen).Days;
+            decimal tongTien = soNgay * phong.Gia;
+
+            if (DichVuIds != null && DichVuIds.Any())
+            { 
+                var dichvus = await repo.getDichVuByIds(DichVuIds);
+                tongTien += dichvus.Sum(d => d.GiaDichVu);
+            }
+
+            if (trangThaiThanhToan == 1)
+            {
+                const decimal USD_EXCHANGE_RATE = 24500m;
+
+                decimal tongTienUsd = Math.Round(
+                    tongTien / USD_EXCHANGE_RATE,
+                    2,
+                    MidpointRounding.AwayFromZero
+                );
+
+                TempData["MaPhong"] = MaPhong;
+                TempData["NgayDen"] = NgayDen.ToString();
+                TempData["NgayDi"] = NgayDi.ToString();
+                TempData["PersonId"] = person.PersonId;
+                TempData["trangThaiThanhToan"] = trangThaiThanhToan;
+                TempData["DichVuIds"] = DichVuIds != null ? string.Join(',', DichVuIds) : "";
+
+                var paypalUrl = await _payPalService.CreatePayment(
+                    amount: tongTienUsd,
+                    returnUrl: Url.Action("PayPalSuccess", "ThanhToan", null, Request.Scheme),
+                    cancelUrl: Url.Action("PayPalCancel", "ThanhToan", null, Request.Scheme)
+                );
+
+                return Redirect(paypalUrl);
+            }
+
+            string maOrder = repo.createOrderPhongId();
+            repo.addOrderPhong(new OrderPhong
+            {
+                MaOrderPhong = maOrder,
+                NgayDen = NgayDen,
+                NgayDi = NgayDi,
+                PersonId = person.PersonId,
+                MaPhong = MaPhong,
+                TrangThaiThanhToan = trangThaiThanhToan,
+                TrangThaiDatPhong = "InActive"
+            });
+            if (DichVuIds != null && DichVuIds.Any())
+            {
+                var dichVus = await repo.getDichVuByIds(DichVuIds);
+
+                var orderDichVus = dichVus.Select(dv => new OrderPhongDichVu
+                {
+                    MaOrderPhong = maOrder,
+                    MaDichVu = dv.MaDichVu,
+                    SoLuong = 1,
+                    DonGia = dv.GiaDichVu
+                }).ToList();
+
+                repo.addOrderPhongDichVu(orderDichVus);
+            }
+
+            return RedirectToAction("BookingSuccess", "ThanhToan");
+        }
+
+
+        
 
 
         [AdminOrNhanVienAuthentication]
@@ -211,9 +158,10 @@ namespace HotelManagement.Controllers
         [Route("[controller]/[action]/maorder")]
         public IActionResult addHoadon(string maorder, string tongtien, string maphong)
         {
+            string maHd = repo.createHoaDonId();
             HoaDon hd = new HoaDon
             {
-                MaHoaDon = repo.createHoaDonId(),
+                MaHoaDon = maHd,
                 NgayIn = DateTime.Now,
                 TongTien = float.Parse(tongtien),
                 MaOrderPhong = maorder,
@@ -222,30 +170,37 @@ namespace HotelManagement.Controllers
             bool checkHoaDonOrderPHong = repo.addHoaDon(hd);
             if (checkHoaDonOrderPHong)
             {
-                //sao khi thanh toán thì cập nhật trạng thái phòng lại
-                repo.updateTrangThaiPhong(maphong, "MTT1");
-
                 //cập nhật lại trạng thái thanh toán của order phòng
-                repo.updateTrangThaiOrderPhong(maorder);
+                repo.updateTrangThaiOrderPhong(maorder, "Done");
+                return RedirectToAction("ChiTietHoaDon", "Admin", new { maHoaDon = maHd });
 
-                return View("ThanhToanThanhCong");
             }
             else
             {
-                return RedirectToAction("thanhToan", "Room", new { maphong = maphong });
+                return RedirectToAction("QLPhongDaDat", "Admin");
             }
 
         }
 
         [AdminOrNhanVienAuthentication]
-        public IActionResult xacNhanDatPhong(string maphong)
+        public IActionResult xacNhanDatPhong(string maorder, string maphong)
         {
-            //khi xác nhận đặt phòng thì phòng chuyển sang trạng thái đã đặt nghĩa là khách đang ở
-            repo.updateTrangThaiPhong(maphong, "MTT2");
-            return RedirectToAction("Index");
+            if (!string.IsNullOrEmpty(maorder) && !string.IsNullOrEmpty(maphong))
+            {
+                // 1. Update trạng thái phòng
+                repo.updateTrangThaiPhong(maphong, "MTT2"); // Đang ở
+
+                // 2. Update trạng thái đặt phòng chỉ cho order được chọn
+                var order = repo.getOrderPhongByMaPhong(maphong)
+                                .FirstOrDefault(o => o.MaOrderPhong == maorder); 
+                if (order != null)
+                {
+                    order.TrangThaiDatPhong = "Active";
+                    repo.updateOrderPhong(order);
+                }
+            }
+            return RedirectToAction("QLPhongDaDat", "Admin");
         }
-
-
     }
 
     public class LoaiPhongPhongTrangThaiPhong
@@ -256,8 +211,8 @@ namespace HotelManagement.Controllers
         }
         public IEnumerable<LoaiPhong> loaiphongs { get; set; }
         public IEnumerable<Phong> phongs { get; set; }
-        public IEnumerable<TrangThaiPhong> trangthaiphongs { get; set; }
         public IEnumerable<DichVu> dichvus { get; set; }
+        public List<KhachSan> khachSans { get; set; }
         public Person Person { get; set; } = null;
         public bool error { get; set; } = true;
     }

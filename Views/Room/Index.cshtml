@@ -1,7 +1,6 @@
 ﻿@model LoaiPhongPhongTrangThaiPhong
 @inject IHttpContextAccessor accessor
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 
 <div class="container my-4">
 
@@ -15,82 +14,67 @@
     <div class="row">
         <!-- Sidebar Filter -->
         <div class="col-md-3 mb-4">
-            <div class="list-group mb-3">
-                <div class="list-group-item list-group-item-action active text-center">Loại phòng</div>
-                <a class="list-group-item list-group-item-action text-center" href="/room/index">All</a>
-                @foreach (var loaiphong in Model.loaiphongs)
-                {
-                    <a class="list-group-item list-group-item-action text-center" asp-action="Index" asp-route-loaiphong="@loaiphong.MaLoaiPhong">@loaiphong.TenLoaiPhong</a>
-                }
-            </div>
+            <form asp-action="Index" method="get" class="border p-3 rounded">
+                <div class="mb-2">
+                    <label class="form-label">Khách sạn</label>
+                    <select name="khachsan" class="form-select">
+                        <option value="">Tất cả</option>
+                        @foreach (var ks in Model.khachSans)
+                        {
+                            <option value="@ks.MaKhachSan"
+                                    selected="@(Context.Request.Query["khachsan"] == ks.MaKhachSan)">
+                                @ks.TenKhachSan
+                            </option>
+                        }
+                    </select>
+                </div>
 
-            <div class="list-group">
-                <div class="list-group-item list-group-item-action active text-center">Trạng thái phòng</div>
-                @foreach (var trangthai in Model.trangthaiphongs)
-                {
-                    <a class="list-group-item list-group-item-action text-center" asp-action="Index" asp-route-trangthaiphong="@trangthai.MaTrangThai">@trangthai.TenTrangThai</a>
-                }
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">Loại phòng</label>
+                    <select name="loaiphong" class="form-select">
+                        <option value="">Tất cả</option>
+                        @foreach (var lp in Model.loaiphongs)
+                        {
+                            <option value="@lp.MaLoaiPhong"
+                                    selected="@(Context.Request.Query["loaiphong"] == lp.MaLoaiPhong)">
+                                @lp.TenLoaiPhong
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Lọc</button>
+            </form>
         </div>
 
-        <!-- Rooms List -->
         <div class="col-md-9">
             <div class="row g-4">
                 @foreach (var phong in Model.phongs)
                 {
                     <div class="col-md-4">
                         <div class="card h-100 shadow-sm">
-                            <img src="~/pictures/@(
-                                 phong.MaLoaiPhongNavigation.MaLoaiPhong == "MLP1" ? "phongdon.png" :
-                                 phong.MaLoaiPhongNavigation.MaLoaiPhong == "MLP2" ? "phongdoi.png" :
-                                 phong.MaLoaiPhongNavigation.MaLoaiPhong == "MLP3" ? "phonggiadinh.jpg" :
-                                 "phongvip.jpg"
-                                                     )" class="card-img-top" style="height:200px; object-fit:cover;" alt="@phong.TenPhong">
+                            <img src="@phong.Anh" alt="@phong.TenPhong">
 
                             <div class="card-body d-flex flex-column">
-                                <h5 class="card-title">@phong.TenPhong - @phong.MaTrangThaiNavigation.TenTrangThai</h5>
-                                <p class="card-text">@phong.MaLoaiPhongNavigation.TenLoaiPhong - @String.Format("{0:N0}", phong.MaLoaiPhongNavigation.GiaPhong)</p>
+                                <h5 class="card-title">@phong.TenPhong</h5>
+                                <p class="card-text">@phong.MaLoaiPhongNavigation.TenLoaiPhong - @String.Format("{0:N0}", phong.Gia)</p>
 
+                                <a class="btn btn-info w-100 mb-3"
+                                   asp-controller="Room"
+                                   asp-action="ChiTietPhong"
+                                   asp-route-maphong="@phong.MaPhong">
+                                    Xem chi tiết
+                                </a>
                                 <div class="mt-auto">
                                     @{
                                         var userName = accessor.HttpContext.Session.GetString("UserName");
-                                        var isAdminOrNV = accessor.HttpContext.Session.GetString("admin") != null || accessor.HttpContext.Session.GetString("nhanvien") != null;
-                                    }
-
-                                    @if (phong.MaTrangThaiNavigation.MaTrangThai == "MTT1")
-                                    {
-                                        <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#@phong.MaPhong">
-                                            @(userName != null ? "Đặt trước" : "Đặt phòng")
-                                        </button>
-                                    }
-                                    else if (phong.MaTrangThaiNavigation.MaTrangThai == "MTT2")
-                                    {
-                                        if (isAdminOrNV)
-                                        {
-                                            <a class="btn btn-success w-100 mb-2" asp-controller="Room" asp-action="thanhToan" asp-route-maphong="@phong.MaPhong">Thanh toán</a>
-                                        }
-                                        else if (userName != null)
-                                        {
-                                            <button class="btn btn-secondary w-100 mb-2" disabled>Đang thuê</button>
-                                        }
-                                    }
-                                    else if (phong.MaTrangThaiNavigation.MaTrangThai == "MTT3")
-                                    {
-                                        if (userName != null && isAdminOrNV)
-                                        {
-                                            <button type="button" class="btn btn-warning w-100 mb-2" data-bs-toggle="modal" data-bs-target="#@phong.MaPhong">Xác nhận</button>
-                                        }
-                                        else
-                                        {
-                                            <button class="btn btn-secondary w-100 mb-2" disabled>Đã đặt trước</button>
-                                        }
+                                        var isAdminOrNV = accessor.HttpContext.Session.GetString("admin") != null
+                                        || accessor.HttpContext.Session.GetString("nhanvien") != null;
                                     }
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Modal for booking/confirmation -->
 
                     <div class="modal fade" id="@phong.MaPhong" tabindex="-1">
                         <div class="modal-dialog modal-dialog-centered modal-xl">
@@ -100,104 +84,70 @@
                                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                 </div>
                                 <div class="modal-body p-4">
-<form method="post" class="row g-4" asp-controller="Room" asp-action="datPhongVaDichVu">
-    <input type="hidden" name="maphong" value="@phong.MaPhong" />
+                                    <form method="post" class="row g-4" asp-controller="Room" asp-action="datPhongVaDichVu" onsubmit="return validateDate()">
+                                        <input type="hidden" name="maphong" value="@phong.MaPhong" />
+                                        <input type="hidden" name="tongTien" id="tongTien" />
+                                        <input type="hidden" name="selectedServiceIds" />
+                                        <input type="hidden" name="selectedQuantities" />
+                                        <input type="hidden" name="servicePrice" />
+                                        <div class="col-md-6">
+                                            <div class="card shadow-sm border-0 h-100">
+                                                <div class="card-header bg-secondary text-white">Thông tin khách hàng</div>
+                                                <div class="card-body">
+                                                    @if (userName != null)
+                                                    {
+                                                        <input type="hidden" name="hoten" value="@Model.Person.HoTen" />
+                                                        <input type="text" class="form-control mb-3" value="@Model.Person.HoTen" disabled />
 
-    <!-- Hidden inputs cho dịch vụ -->
-    <input type="hidden" name="selectedServiceIds" />
-    <input type="hidden" name="selectedQuantities" />
-    <input type="hidden" name="servicePrice" />
+                                                        <input type="hidden" name="tuoi" value="@Model.Person.Tuoi" />
+                                                        <input type="number" class="form-control mb-3" value="@Model.Person.Tuoi" disabled />
 
-    <!-- Customer Info -->
-    <div class="col-md-6">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-secondary text-white">Thông tin khách hàng</div>
-            <div class="card-body">
-                @if (userName != null)
-                {
-                    <input type="hidden" name="hoten" value="@Model.Person.HoTen" />
-                    <input type="text" class="form-control mb-3" value="@Model.Person.HoTen" disabled />
+                                                        <input type="hidden" name="gioitinh" value="@Model.Person.GioiTinh" />
+                                                        <select class="form-select mb-3" disabled>
+                                                            <option value="0" selected="@Equals(Model.Person.GioiTinh, 0)">Nam</option>
+                                                            <option value="1" selected="@Equals(Model.Person.GioiTinh, 1)">Nữ</option>
+                                                        </select>
 
-                    <input type="hidden" name="tuoi" value="@Model.Person.Tuoi" />
-                    <input type="number" class="form-control mb-3" value="@Model.Person.Tuoi" disabled />
+                                                        <input type="hidden" name="cccd" value="@Model.Person.PersonId" />
+                                                        <input type="text" class="form-control mb-3" value="@Model.Person.PersonId" disabled />
 
-                    <input type="hidden" name="gioitinh" value="@Model.Person.GioiTinh" />
-                    <select class="form-select mb-3" disabled>
-                        <option value="0" selected="@Equals(Model.Person.GioiTinh, 0)">Nam</option>
-                        <option value="1" selected="@Equals(Model.Person.GioiTinh, 1)">Nữ</option>
-                    </select>
+                                                        <input type="hidden" name="sdt" value="@Model.Person.Sdt" />
+                                                        <input type="text" class="form-control mb-3" value="@Model.Person.Sdt" disabled />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input class="form-control mb-3" name="hoten" placeholder="Họ và tên" />
+                                                        <input class="form-control mb-3" type="number" name="tuoi" placeholder="Tuổi" />
+                                                        <select class="form-select mb-3" name="gioitinh">
+                                                            <option value="0">Nam</option>
+                                                            <option value="1">Nữ</option>
+                                                        </select>
+                                                        <input class="form-control mb-3" name="cccd" placeholder="CCCD" />
+                                                        <input class="form-control mb-3" name="sdt" placeholder="SĐT" />
+                                                    }
+                                                    <input class="form-control mb-3" type="date" name="ngayden" placeholder="Ngày đến"/>
+                                                    <input class="form-control mb-3" type="date" name="ngaydi" placeholder="Ngày đi" />
+                                                    <select class="form-control mt-3 form-select" name="trangThaiThanhToan" id="trangThaiThanhToan">
+                                                        <option value="1">Thanh toán trước</option>
+                                                        <option value="0">Thanh toán khi nhận phòng</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                    <input type="hidden" name="cccd" value="@Model.Person.PersonId" />
-                    <input type="text" class="form-control mb-3" value="@Model.Person.PersonId" disabled />
-
-                    <input type="hidden" name="sdt" value="@Model.Person.Sdt" />
-                    <input type="text" class="form-control mb-3" value="@Model.Person.Sdt" disabled />
-                }
-                else
-                {
-                    <input class="form-control mb-3" name="hoten" placeholder="Họ và tên" />
-                    <input class="form-control mb-3" type="number" name="tuoi" placeholder="Tuổi" />
-                    <select class="form-select mb-3" name="gioitinh">
-                        <option value="0">Nam</option>
-                        <option value="1">Nữ</option>
-                    </select>
-                    <input class="form-control mb-3" name="cccd" placeholder="CCCD" />
-                    <input class="form-control mb-3" name="sdt" placeholder="SĐT" />
-                }
-                <input class="form-control mb-3" type="date" name="ngayden" />
-                <input class="form-control mb-3" type="date" name="ngaydi" />
-            </div>
-        </div>
-    </div>
-
-    <!-- Services -->
-    <div class="col-md-6">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-secondary text-white">Dịch vụ</div>
-            <div class="card-body p-3">
-                <table class="table table-hover table-bordered align-middle text-center mb-3">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Chọn</th>
-                            <th>Tên dịch vụ</th>
-                            <th>Giá</th>
-                            <th>Số lượng</th>
-                            <th>Tổng tiền</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var dichvu in Model.dichvus)
-                        {
-                            <tr data-id="@dichvu.MaDichVu">
-                                <td><input class="form-check-input checkbox" type="checkbox" data-gia="@dichvu.GiaDichVu" onclick="updateTotal(this)"></td>
-                                <td>@dichvu.TenDichVu</td>
-                                <td>@String.Format("{0:N0}", dichvu.GiaDichVu)</td>
-                                <td><input type="number" class="form-control quantity" value="1" min="1" oninput="updateTotal(this)" /></td>
-                                <td class="total">0</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-                <div class="d-flex justify-content-between fw-bold mt-2">
-                    <span>Tổng tiền dịch vụ:</span>
-                    <span class="tongTien">0</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal-footer mt-3">
-        <button type="submit" class="btn btn-success btn-lg">Xác nhận</button>
-        <button type="button" class="btn btn-secondary btn-lg" data-bs-dismiss="modal">Đóng</button>
-    </div>
-</form>
+                                        <div class="modal-footer mt-3">
+                                            <button type="submit" class="btn btn-primary btn-lg">
+                                                Đặt phòng
+                                            </button>
+                                            <button type="button" class="btn btn-secondary btn-lg" data-bs-dismiss="modal">Đóng</button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
-                      
+
 
                     </div>
-
                 }
             </div>
         </div>
@@ -228,6 +178,7 @@
         });
 
         form.querySelector(".tongTien").textContent = totalDichVu.toLocaleString('vi-VN', { style:'currency', currency:'VND'});
+        form.querySelector("#tongTien").value = totalDichVu;
     }
 
     // Trước khi submit form, gom dữ liệu dịch vụ vào hidden input
@@ -250,4 +201,6 @@
             form.querySelector('input[name="servicePrice"]').value = prices.join(',');
         });
     });
+
+
 </script>

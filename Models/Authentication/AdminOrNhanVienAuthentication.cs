@@ -13,8 +13,8 @@ namespace HotelManagement.Models.Authentication
             {
                 context.Result = new RedirectToRouteResult(new RouteValueDictionary
                 {
-                    { "controller","Login" },
-                    { "action","Index" }
+                    { "controller", "Account" },
+                    { "action", "Login" }
                 });
             }
         }

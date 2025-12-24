@@ -12,7 +12,6 @@ namespace HotelManagement.Models
 
         public string MaLoaiPhong { get; set; } = null!;
         public string? TenLoaiPhong { get; set; }
-        public float GiaPhong { get; set; }
 
         public virtual ICollection<Phong> Phongs { get; set; }
     }

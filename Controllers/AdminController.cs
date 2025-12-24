@@ -22,8 +22,7 @@ namespace HotelManagement.Controllers
         {
             var loaiphong = repo.getLoaiPhong.ToList();
             var phong = repo.getPhongByLoaiPhong(id).ToList();
-            var trangthaiphong = repo.getTrangThaiPhong.ToList();
-            return View(new LoaiPhongAndPhong { lp = loaiphong, p = phong, ttp = trangthaiphong });
+            return View(new LoaiPhongAndPhong { lp = loaiphong, p = phong });
         }
 
         [Route("[controller]/phong/[action]/{maloaiphong}")]
@@ -36,13 +35,12 @@ namespace HotelManagement.Controllers
 
         [AdminAuthentication]
         [HttpPost]
-        public IActionResult themLoaiPhong(string maloaiphong, string tenloaiphong, float gialoaiphong)
+        public IActionResult themLoaiPhong(string maloaiphong, string tenloaiphong)
         {
             LoaiPhong newLoaiPhong = new LoaiPhong
             {
                 MaLoaiPhong = maloaiphong,
                 TenLoaiPhong = tenloaiphong,
-                GiaPhong = gialoaiphong,
             };
             repo.themLoaiPhong(newLoaiPhong);
 
@@ -51,22 +49,92 @@ namespace HotelManagement.Controllers
         }
 
         [AdminAuthentication]
-        public IActionResult suaLoaiPhong(string maloaiphong, string tenloaiphong, float gialoaiphong)
+        public IActionResult suaLoaiPhong(string maloaiphong, string tenloaiphong)
         {
-            repo.suaLoaiPhong(new LoaiPhong { MaLoaiPhong = maloaiphong, TenLoaiPhong = tenloaiphong, GiaPhong = gialoaiphong });
+            repo.suaLoaiPhong(new LoaiPhong { MaLoaiPhong = maloaiphong, TenLoaiPhong = tenloaiphong });
             return RedirectToAction("QLPhong");
         }
 
-        [AdminAuthentication]
-        public IActionResult themPhong(string maphong, string tenphong, string motaphong, string matrangthai, string maloaiphong)
+        private string SaveImage(IFormFile file)
         {
+            if (file == null || file.Length == 0) return null;
+
+            var uploadPath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot/uploads"
+            );
+
+            if (!Directory.Exists(uploadPath))
+                Directory.CreateDirectory(uploadPath);
+
+            var ext = Path.GetExtension(file.FileName).ToLower();
+            var allow = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+            if (!allow.Contains(ext))
+                return null;
+
+            var fileName = $"{Guid.NewGuid()}{ext}";
+            var path = Path.Combine(uploadPath, fileName);
+
+            using var stream = new FileStream(path, FileMode.Create);
+            file.CopyTo(stream);
+
+            return "/uploads/" + fileName;
+        }
+
+        [HttpPost]
+        [AdminAuthentication]
+        public IActionResult themPhong(
+            string maphong,
+            string makhachsan,
+            string tenphong,
+            string motaphong,
+            string matrangthai,
+            string maloaiphong,
+            decimal gia,
+            IFormFile imageFile
+        )
+        {
+            var imageUrl = SaveImage(imageFile);
             repo.themPhong(new Phong
             {
                 MaPhong = maphong,
+                MaKhachSan = makhachsan,
                 TenPhong = tenphong,
                 MoTaPhong = motaphong,
                 MaTrangThai = matrangthai,
-                MaLoaiPhong = maloaiphong
+                MaLoaiPhong = maloaiphong,
+                Gia = gia,
+                Anh = imageUrl
+            });
+
+            return RedirectToAction("QLPhong");
+        }
+
+        [HttpPost]
+        [AdminAuthentication]
+        public IActionResult suaPhong(
+            string maphong,
+            string makhachsan,
+            string tenphong,
+            string motaphong,
+            string matrangthai,
+            string maloaiphong,
+            decimal gia,
+            IFormFile imageFile,
+            string anhCu
+        )
+        {
+            var imageUrl = SaveImage(imageFile) ?? anhCu;
+            repo.suaPhong(new Phong
+            {
+                MaPhong = maphong,
+                MaKhachSan = makhachsan,
+                TenPhong = tenphong,
+                MoTaPhong = motaphong,
+                MaTrangThai = matrangthai,
+                MaLoaiPhong = maloaiphong,
+                Gia = gia,
+                Anh = imageUrl
             });
 
             return RedirectToAction("QLPhong");
@@ -79,21 +147,6 @@ namespace HotelManagement.Controllers
             repo.xoaPhong(maphong);
             return RedirectToAction("QLPhong");
         }
-
-        [AdminAuthentication]
-        public IActionResult suaPhong(string maphong, string tenphong, string motaphong, string matrangthai, string maloaiphong)
-        {
-            repo.suaPhong(new Phong
-            {
-                MaPhong = maphong,
-                TenPhong = tenphong,
-                MoTaPhong = motaphong,
-                MaTrangThai = matrangthai,
-                MaLoaiPhong = maloaiphong
-            });
-            return RedirectToAction("QLPhong");
-        }
-
         [AdminOrNhanVienAuthentication]
         public IActionResult QLDichVu(bool error = true)
         {
@@ -102,7 +155,7 @@ namespace HotelManagement.Controllers
         }
 
         [AdminOrNhanVienAuthentication]
-        public IActionResult updateDichVu(string madichvu,string tendichvu,float giadichvu)
+        public IActionResult updateDichVu(string madichvu, string tendichvu, decimal giadichvu)
         {
             DichVu dichvu = new DichVu
             {
@@ -130,7 +183,7 @@ namespace HotelManagement.Controllers
         }
 
         [AdminOrNhanVienAuthentication]
-        public IActionResult themDichVu(string madichvu,string tendichvu,float giadichvu)
+        public IActionResult themDichVu(string madichvu, string tendichvu, decimal giadichvu)
         {
             DichVu dichvu = new DichVu
             {
@@ -145,15 +198,39 @@ namespace HotelManagement.Controllers
             }
             else
             {
-                return RedirectToAction("QLDichVu",new {error = false});
+                return RedirectToAction("QLDichVu", new { error = false });
             }
         }
 
 
         [AdminOrNhanVienAuthentication]
-        public IActionResult QLHoaDon()
+        public IActionResult QLHoaDon(DateTime? tuNgay, DateTime? denNgay)
         {
-            return View(repo.GetHoaDon);
+            var query = repo.GetHoaDonQueryable();
+
+            if (tuNgay.HasValue)
+                query = query.Where(x => x.NgayIn >= tuNgay.Value.Date);
+
+            if (denNgay.HasValue)
+                query = query.Where(x => x.NgayIn < denNgay.Value.Date.AddDays(1));
+
+            var tongSoHoaDon = query.Count();
+            var tongDoanhThu = query.Sum(x => (decimal?)x.TongTien) ?? 0;
+
+            ViewBag.TuNgay = tuNgay?.ToString("yyyy-MM-dd");
+            ViewBag.DenNgay = denNgay?.ToString("yyyy-MM-dd");
+            ViewBag.TongSoHoaDon = tongSoHoaDon;
+            ViewBag.TongDoanhThu = tongDoanhThu;
+
+            return View(query.OrderByDescending(x => x.NgayIn).ToList());
+        }
+
+
+        [AdminOrNhanVienAuthentication]
+        public IActionResult QLPhongDaDat()
+        {
+            var orders = repo.getOrderPhong();
+            return View(orders);
         }
 
 
@@ -180,6 +257,52 @@ namespace HotelManagement.Controllers
         }
 
 
+        [AdminOrNhanVienAuthentication]
+        public IActionResult QLTinTuc()
+        {
+            return View(repo.getDanhSachBaiViet);
+        }
+
+        [AdminOrNhanVienAuthentication]
+        [HttpPost]
+        public IActionResult AddBaiViet(string MaBaiViet, string TieuDe, string AnhBia, string NoiDung)
+        {
+            var baiViet = new BaiViet
+            {
+                MaBaiViet = MaBaiViet,
+                TieuDe = TieuDe,
+                AnhBia = AnhBia,
+                NoiDung = NoiDung,
+                CreateDate = DateTime.Now
+            };
+
+            repo.addBaiViet(baiViet);
+            return RedirectToAction("QLTinTuc");
+        }
+
+        [AdminOrNhanVienAuthentication]
+        [HttpPost]
+        public IActionResult UpdateBaiViet(string MaBaiViet, string TieuDe, string AnhBia, string NoiDung)
+        {
+            var baiViet = new BaiViet
+            {
+                MaBaiViet = MaBaiViet,
+                TieuDe = TieuDe,
+                AnhBia = AnhBia,
+                NoiDung = NoiDung,
+                CreateDate = DateTime.Now
+            };
+
+            repo.updateBaiViet(baiViet);
+            return RedirectToAction("QLTinTuc");
+        }
+
+        [AdminOrNhanVienAuthentication]
+        public IActionResult DeleteBaiViet(string id)
+        {
+            repo.removeBaiViet(id);
+            return RedirectToAction("QLTinTuc");
+        }
 
         [AdminOrNhanVienAuthentication]
         public IActionResult updateThongTinKhachHang(string personid, string hoten, int tuoi, int gioitinh, string sdt)
@@ -228,9 +351,6 @@ namespace HotelManagement.Controllers
             return View(model);
         }
 
-
-
-
         [HttpGet]
         [AdminAuthentication]
         [HttpPost]
@@ -251,7 +371,7 @@ namespace HotelManagement.Controllers
                 vaitros = repo.GetVaiTros
             };
 
-            
+
             if (manhanvien != null && hoten != null && tuoi > 0 && gioitinh != -1 && sdt != null && vaitro != null && username != null && password != null && confirm != null)
             {
                 if (password != confirm)
@@ -306,9 +426,9 @@ namespace HotelManagement.Controllers
             return View(model);
         }
 
-       
+
         [AdminAuthentication]
-        public IActionResult updateThongTinNhanVien(string manhanvien,string hoten,int tuoi,int gioitinh,string sdt,string vaitro)
+        public IActionResult updateThongTinNhanVien(string manhanvien, string hoten, int tuoi, int gioitinh, string sdt, string vaitro)
         {
             Person person = new Person
             {
@@ -323,8 +443,8 @@ namespace HotelManagement.Controllers
                 NhanVienId = manhanvien,
                 MaVaiTro = vaitro
             };
-            repo.updateThongTinNhanVien(person,nhanvien);
-            if(vaitro == "MVT1")
+            repo.updateThongTinNhanVien(person, nhanvien);
+            if (vaitro == "MVT1")
             {
                 repo.updateLoaiTaiKhoanOfPerson(manhanvien, "LTK1");
             }
@@ -344,7 +464,7 @@ namespace HotelManagement.Controllers
         }
 
         [AdminAuthentication]
-        public IActionResult updateLoaiTaiKhoan(string maloaitaikhoan,string tenloaitaikhoan)
+        public IActionResult updateLoaiTaiKhoan(string maloaitaikhoan, string tenloaitaikhoan)
         {
             LoaiTaiKhoan loaitaikhoan = new LoaiTaiKhoan
             {
@@ -356,9 +476,9 @@ namespace HotelManagement.Controllers
         }
 
         [AdminAuthentication]
-        public IActionResult updateTaiKhoanNhanVien(string mataikhoan,string username, string password)
+        public IActionResult updateTaiKhoanNhanVien(string mataikhoan, string username, string password)
         {
-            repo.updateTaiKhoan(mataikhoan, username, password);    
+            repo.updateTaiKhoan(mataikhoan, username, password);
             return RedirectToAction("QLTaiKhoan");
         }
         [AdminAuthentication]
@@ -374,7 +494,6 @@ namespace HotelManagement.Controllers
     {
         public List<LoaiPhong> lp { get; set; }
         public List<Phong> p { get; set; }
-        public List<TrangThaiPhong> ttp { get; set; }
     }
 
 

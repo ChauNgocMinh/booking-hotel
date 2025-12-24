@@ -3,6 +3,7 @@ using HotelManagement.Models;
 using HotelManagement.Models.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace HotelManagement.Controllers
 {
@@ -10,7 +11,7 @@ namespace HotelManagement.Controllers
     {
         private IRepository repo;
         private IHttpContextAccessor accessor;
-        public BookingHistoryOfUser(IRepository repo,IHttpContextAccessor accessor)
+        public BookingHistoryOfUser(IRepository repo, IHttpContextAccessor accessor)
         {
             this.repo = repo;
             this.accessor = accessor;
@@ -19,24 +20,56 @@ namespace HotelManagement.Controllers
         [Authentication]
         public IActionResult Index()
         {
-            //đầu tiên lấy Person
+            var dichvus = repo.getDichVus.ToList();
+            ViewData["DichVus"] = dichvus;
             string userName = accessor.HttpContext.Session.GetString("UserName");
             Person p = repo.getPersonByUserName(userName);
-
-
-            //từ person lấy ra OrderPhong của person đó
             IEnumerable<OrderPhong> oderPhongs = repo.getOrderPhongByPerson(p.PersonId);
             return View(oderPhongs);
         }
 
         [Authentication]
-        public IActionResult removeOrder(string maorder,string maphong)
+        public IActionResult removeOrder(string maorder, string maphong)
         {
             repo.removeOrderPhong(maorder);
-            //sau khí xóa order phòng xong thì cập nhật lại trạng thái là trống
-
             repo.updateTrangThaiPhong(maphong, "MTT1");
             return RedirectToAction("Index");
         }
+
+        [Authentication]
+        public IActionResult HuyPhong(string id)
+        {
+            repo.updateTrangThaiOrderPhong(id, "Cancel");
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [Authentication]
+        public async Task<IActionResult> DatThemDichVu(
+            string orderPhongId,
+            List<OrderPhongDichVu> items)
+        {
+            var validItems = new List<OrderPhongDichVu>();
+
+            foreach (var item in items)
+            {
+                if (!item.SoLuong.HasValue || item.SoLuong <= 0)
+                    continue;
+
+                item.MaOrderPhong = orderPhongId;
+
+                var dv = await repo.getDichvu(item.MaDichVu);
+                item.DonGia = dv.GiaDichVu;
+
+                validItems.Add(item);
+            }
+
+            if (validItems.Any())
+            {
+                repo.addOrderPhongDichVu(validItems);
+            }
+            return RedirectToAction("Index");
+        }
+
     }
 }

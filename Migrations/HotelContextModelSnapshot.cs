@@ -22,14 +22,43 @@ namespace HotelManagement.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("HotelManagement.Models.BaiViet", b =>
+                {
+                    b.Property<string>("MaBaiViet")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("AnhBia")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("NoiDung")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TieuDe")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("MaBaiViet")
+                        .HasName("PK__BaiViet");
+
+                    b.ToTable("BaiViet", (string)null);
+                });
+
             modelBuilder.Entity("HotelManagement.Models.DichVu", b =>
                 {
                     b.Property<string>("MaDichVu")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<float>("GiaDichVu")
-                        .HasColumnType("real");
+                    b.Property<decimal>("GiaDichVu")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("TenDichVu")
                         .HasMaxLength(255)
@@ -77,14 +106,44 @@ namespace HotelManagement.Migrations
                     b.ToTable("Khach_Hang", (string)null);
                 });
 
+            modelBuilder.Entity("HotelManagement.Models.KhachSan", b =>
+                {
+                    b.Property<string>("MaKhachSan")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("AnhDaiDien")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DiaChi")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("MoTa")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SoDienThoai")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("TenKhachSan")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("MaKhachSan");
+
+                    b.ToTable("KhachSan", (string)null);
+                });
+
             modelBuilder.Entity("HotelManagement.Models.LoaiPhong", b =>
                 {
                     b.Property<string>("MaLoaiPhong")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
-
-                    b.Property<float>("GiaPhong")
-                        .HasColumnType("real");
 
                     b.Property<string>("TenLoaiPhong")
                         .HasMaxLength(255)
@@ -154,6 +213,9 @@ namespace HotelManagement.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("PersonID");
 
+                    b.Property<string>("TrangThaiDatPhong")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("TrangThaiThanhToan")
                         .HasColumnType("int");
 
@@ -177,8 +239,8 @@ namespace HotelManagement.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<float?>("DonGia")
-                        .HasColumnType("real");
+                    b.Property<decimal?>("DonGia")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("SoLuong")
                         .HasColumnType("int");
@@ -236,6 +298,15 @@ namespace HotelManagement.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<string>("Anh")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Gia")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("MaKhachSan")
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<string>("MaLoaiPhong")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
@@ -255,11 +326,46 @@ namespace HotelManagement.Migrations
                     b.HasKey("MaPhong")
                         .HasName("PK__Phong__20BD5E5B177E3D28");
 
+                    b.HasIndex("MaKhachSan");
+
                     b.HasIndex("MaLoaiPhong");
 
-                    b.HasIndex("MaTrangThai");
-
                     b.ToTable("Phong", (string)null);
+                });
+
+            modelBuilder.Entity("HotelManagement.Models.ReviewKhachSan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MaKhachSan")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("PersonId")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaKhachSan");
+
+                    b.HasIndex("PersonId");
+
+                    b.ToTable("ReviewKhachSan", (string)null);
                 });
 
             modelBuilder.Entity("HotelManagement.Models.TaiKhoan", b =>
@@ -293,22 +399,6 @@ namespace HotelManagement.Migrations
                     b.HasIndex("PersonId");
 
                     b.ToTable("Tai_Khoan", (string)null);
-                });
-
-            modelBuilder.Entity("HotelManagement.Models.TrangThaiPhong", b =>
-                {
-                    b.Property<string>("MaTrangThai")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("TenTrangThai")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.HasKey("MaTrangThai")
-                        .HasName("PK__Trang_Th__AADE41383344BB34");
-
-                    b.ToTable("Trang_Thai_Phong", (string)null);
                 });
 
             modelBuilder.Entity("HotelManagement.Models.VaiTro", b =>
@@ -412,20 +502,37 @@ namespace HotelManagement.Migrations
 
             modelBuilder.Entity("HotelManagement.Models.Phong", b =>
                 {
+                    b.HasOne("HotelManagement.Models.KhachSan", "KhachSan")
+                        .WithMany("Phongs")
+                        .HasForeignKey("MaKhachSan")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("HotelManagement.Models.LoaiPhong", "MaLoaiPhongNavigation")
                         .WithMany("Phongs")
                         .HasForeignKey("MaLoaiPhong")
                         .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FKPhong134689");
 
-                    b.HasOne("HotelManagement.Models.TrangThaiPhong", "MaTrangThaiNavigation")
-                        .WithMany("Phongs")
-                        .HasForeignKey("MaTrangThai")
-                        .HasConstraintName("FKPhong128242");
+                    b.Navigation("KhachSan");
 
                     b.Navigation("MaLoaiPhongNavigation");
+                });
 
-                    b.Navigation("MaTrangThaiNavigation");
+            modelBuilder.Entity("HotelManagement.Models.ReviewKhachSan", b =>
+                {
+                    b.HasOne("HotelManagement.Models.KhachSan", "KhachSan")
+                        .WithMany("ReviewKhachSans")
+                        .HasForeignKey("MaKhachSan")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("HotelManagement.Models.Person", "Person")
+                        .WithMany()
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("KhachSan");
+
+                    b.Navigation("Person");
                 });
 
             modelBuilder.Entity("HotelManagement.Models.TaiKhoan", b =>
@@ -450,6 +557,13 @@ namespace HotelManagement.Migrations
             modelBuilder.Entity("HotelManagement.Models.DichVu", b =>
                 {
                     b.Navigation("OrderPhongDichVus");
+                });
+
+            modelBuilder.Entity("HotelManagement.Models.KhachSan", b =>
+                {
+                    b.Navigation("Phongs");
+
+                    b.Navigation("ReviewKhachSans");
                 });
 
             modelBuilder.Entity("HotelManagement.Models.LoaiPhong", b =>
@@ -483,11 +597,6 @@ namespace HotelManagement.Migrations
             modelBuilder.Entity("HotelManagement.Models.Phong", b =>
                 {
                     b.Navigation("OrderPhongs");
-                });
-
-            modelBuilder.Entity("HotelManagement.Models.TrangThaiPhong", b =>
-                {
-                    b.Navigation("Phongs");
                 });
 
             modelBuilder.Entity("HotelManagement.Models.VaiTro", b =>
